@@ -777,7 +777,7 @@ html[data-theme="dark"] .preview-copy {
   display: grid;
   gap: var(--space-sm);
   align-self: end;
-  padding-bottom: var(--space-md);
+  padding-bottom: 0;
 }
 
 .project-strip-label {
@@ -793,7 +793,7 @@ html[data-theme="dark"] .preview-copy {
   display: flex;
   gap: var(--space-sm);
   overflow-x: auto;
-  padding-bottom: var(--space-xs);
+  padding-bottom: 2.5rem;
   scrollbar-width: none;
 }
 
