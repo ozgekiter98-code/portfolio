@@ -1020,6 +1020,19 @@ html[data-theme="dark"] .preview-copy {
   text-align: left;
 }
 
+.project-overview--desktop-demo {
+  grid-template-columns: minmax(18rem, 29rem) minmax(32rem, 54rem);
+  gap: clamp(1.25rem, 3vw, 3rem);
+  align-items: center;
+  max-width: 88rem;
+  margin-inline: auto;
+}
+
+.project-overview--desktop-demo .project-overview-copy {
+  align-content: center;
+  max-width: 30rem;
+}
+
 .project-overview-copy {
   display: grid;
   gap: clamp(1.15rem, 2vw, 1.75rem);
@@ -1231,6 +1244,82 @@ html[data-theme="dark"] .project-logo-inline:not([data-slug="wrapchat"]) {
 
 .phone-home-bar::before {
   content: none;
+}
+
+/* --- Desktop mockup (The Classic Stripes website demo) --- */
+.project-hero--desktop-demo {
+  width: 100%;
+  min-height: 0;
+  padding: clamp(0.75rem, 1.4vw, 1rem);
+}
+
+.desktop-mockup {
+  width: 100%;
+  max-width: 54rem;
+  overflow: hidden;
+  border-radius: 1.125rem;
+  border: 1px solid color-mix(in oklch, var(--text-strong) 14%, transparent);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.82), rgba(255, 255, 255, 0.55)),
+    var(--surface-1);
+  box-shadow:
+    0 1.5rem 4rem rgba(24, 20, 16, 0.18),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.52);
+}
+
+html[data-theme="dark"] .desktop-mockup {
+  border-color: rgba(255, 255, 255, 0.12);
+  background:
+    linear-gradient(180deg, rgba(34, 31, 41, 0.92), rgba(15, 12, 22, 0.96)),
+    var(--surface-1);
+  box-shadow:
+    0 1.5rem 4rem rgba(0, 0, 0, 0.48),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+.desktop-browser-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  height: 2.15rem;
+  padding-inline: 0.9rem;
+  border-bottom: 1px solid color-mix(in oklch, var(--text-strong) 10%, transparent);
+}
+
+.desktop-browser-bar span {
+  width: 0.62rem;
+  height: 0.62rem;
+  border-radius: 999px;
+  background: color-mix(in oklch, rgb(var(--accent-rgb)) 42%, var(--text-strong) 58%);
+  opacity: 0.72;
+}
+
+.desktop-browser-bar span:nth-child(2) {
+  opacity: 0.42;
+}
+
+.desktop-browser-bar span:nth-child(3) {
+  opacity: 0.28;
+}
+
+.desktop-screen {
+  --desktop-demo-scale: 0.6;
+  position: relative;
+  aspect-ratio: 1440 / 900;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+.desktop-screen-iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1440px;
+  height: 900px;
+  border: 0;
+  background: #ffffff;
+  transform: scale(var(--desktop-demo-scale));
+  transform-origin: top left;
 }
 
 /* ── Wrapchat project sections ──────────────────────────── */
@@ -1493,7 +1582,13 @@ html[data-theme="dark"] .nav-hamburger:focus-visible {
     grid-template-columns: 1fr;
   }
 
-  .project-overview--wrapchat .project-overview-copy {
+  .project-overview--desktop-demo {
+    grid-template-columns: 1fr;
+    max-width: none;
+  }
+
+  .project-overview--wrapchat .project-overview-copy,
+  .project-overview--desktop-demo .project-overview-copy {
     max-width: none;
     margin-left: 0;
     padding-right: 0;
@@ -1519,6 +1614,26 @@ html[data-theme="dark"] .nav-hamburger:focus-visible {
 
   .project-hero--demo .phone-screen {
     height: 100%;
+  }
+
+  .project-hero--desktop-demo {
+    padding-top: clamp(0.75rem, 3vw, 1rem);
+  }
+}
+
+@media (max-width: 640px) {
+  .desktop-mockup {
+    border-radius: 0.75rem;
+  }
+
+  .desktop-browser-bar {
+    height: 1.75rem;
+    padding-inline: 0.7rem;
+  }
+
+  .desktop-browser-bar span {
+    width: 0.48rem;
+    height: 0.48rem;
   }
 }
 

@@ -1,5 +1,7 @@
 (function attachProjectPage(global) {
   const MEDIA_BLOB_BASE_URL = "https://yyukhmkupbovs5lx.public.blob.vercel-storage.com/assets/Media";
+  const CLASSIC_STRIPES_ASSET_BLOB_BASE_URL =
+    "https://yyukhmkupbovs5lx.public.blob.vercel-storage.com/assets/projects/The_Classic_Stripes/TCS-WebsiteUI/public/TCSassets";
   const PROJECT_GALLERIES = {
     istinara: {
       folder: "ISTINARA",
@@ -246,6 +248,101 @@
     applyCleanup();
   }
 
+  function setupClassicStripesDemoFrame(frame) {
+    if (!frame) {
+      return;
+    }
+
+    const screen = frame.querySelector(".desktop-screen");
+    const iframe = frame.querySelector(".desktop-screen-iframe");
+
+    if (!screen) {
+      return;
+    }
+
+    function syncScale() {
+      const rect = screen.getBoundingClientRect();
+      const scale = Math.min(1, rect.width / 1440, rect.height / 900);
+      screen.style.setProperty("--desktop-demo-scale", scale.toFixed(3));
+    }
+
+    if ("ResizeObserver" in window) {
+      const observer = new ResizeObserver(syncScale);
+      observer.observe(screen);
+      frame._desktopDemoResizeObserver = observer;
+    } else {
+      window.addEventListener("resize", syncScale, { passive: true });
+    }
+
+    syncScale();
+    window.requestAnimationFrame(syncScale);
+
+    setupClassicStripesBlobAssets(iframe);
+  }
+
+  function getClassicStripesBlobAssetUrl(value) {
+    if (!value || value.indexOf(CLASSIC_STRIPES_ASSET_BLOB_BASE_URL) === 0) {
+      return value;
+    }
+
+    if (value.indexOf("assets/") === 0) {
+      return CLASSIC_STRIPES_ASSET_BLOB_BASE_URL + "/" + value.replace(/^assets\//, "");
+    }
+
+    if (value.indexOf("TCSassets/") === 0) {
+      return CLASSIC_STRIPES_ASSET_BLOB_BASE_URL + "/" + value.replace(/^TCSassets\//, "");
+    }
+
+    return value;
+  }
+
+  function applyClassicStripesBlobAssets(doc) {
+    if (!doc || !doc.body) {
+      return;
+    }
+
+    doc.querySelectorAll("img[src], source[src]").forEach(function rewriteMediaAsset(element) {
+      const currentSrc = element.getAttribute("src");
+      const nextSrc = getClassicStripesBlobAssetUrl(currentSrc);
+
+      if (nextSrc === currentSrc) {
+        return;
+      }
+
+      element.setAttribute("src", nextSrc);
+
+      if (element.tagName.toLowerCase() === "source" && element.parentElement && element.parentElement.load) {
+        element.parentElement.load();
+      }
+    });
+
+    doc.querySelectorAll("video[poster]").forEach(function rewritePosterAsset(video) {
+      const currentPoster = video.getAttribute("poster");
+      const nextPoster = getClassicStripesBlobAssetUrl(currentPoster);
+
+      if (nextPoster !== currentPoster) {
+        video.setAttribute("poster", nextPoster);
+      }
+    });
+  }
+
+  function setupClassicStripesBlobAssets(iframe) {
+    if (!iframe) {
+      return;
+    }
+
+    function applyAssets() {
+      try {
+        applyClassicStripesBlobAssets(iframe.contentDocument);
+      } catch (_error) {
+        // Ignore iframe access issues.
+      }
+    }
+
+    iframe.addEventListener("load", applyAssets);
+    applyAssets();
+  }
+
   function initProjectGallery(container) {
     if (!container) {
       return;
@@ -413,6 +510,67 @@
     return project.slug === "istinara" ? project.title.toUpperCase() : project.title;
   }
 
+  function getProjectOverviewClass(project) {
+    if (project.slug === "wrapchat") {
+      return " project-overview--wrapchat";
+    }
+
+    if (project.slug === "classic-stripes") {
+      return " project-overview--desktop-demo";
+    }
+
+    return "";
+  }
+
+  function renderProjectHero(project, projectTitle) {
+    if (project.slug === "wrapchat") {
+      return (
+        '<figure class="project-hero project-hero--demo">' +
+        '  <div class="phone-mockup-outer phone-mockup-outer--hero">' +
+        '    <div class="phone-mockup">' +
+        '      <div class="phone-chrome">' +
+        '        <div class="phone-notch"></div>' +
+        '        <iframe class="phone-screen"' +
+        '          src="../assets/projects/Wrapchat/WrapchatUI/wrapchat-app.html"' +
+        '          title="Wrapchat — interactive demo"' +
+        '          sandbox="allow-scripts allow-same-origin"' +
+        '          loading="lazy">' +
+        '        </iframe>' +
+        '        <div class="phone-home-bar"></div>' +
+        '      </div>' +
+        '    </div>' +
+        '  </div>' +
+        '</figure>'
+      );
+    }
+
+    if (project.slug === "classic-stripes") {
+      return (
+        '<figure class="project-hero project-hero--demo project-hero--desktop-demo">' +
+        '  <div class="desktop-mockup" data-desktop-demo-frame>' +
+        '    <div class="desktop-browser-bar" aria-hidden="true">' +
+        '      <span></span><span></span><span></span>' +
+        '    </div>' +
+        '    <div class="desktop-screen">' +
+        '      <iframe class="desktop-screen-iframe"' +
+        '        src="../assets/projects/The_Classic_Stripes/TCS-WebsiteUI/public/index.html"' +
+        '        title="The Classic Stripes — website demo"' +
+        '        sandbox="allow-scripts allow-same-origin"' +
+        '        loading="lazy">' +
+        '      </iframe>' +
+        '    </div>' +
+        '  </div>' +
+        '</figure>'
+      );
+    }
+
+    return (
+      '<figure class="project-hero">' +
+      '  <img src="' + project.heroImage + '" alt="' + projectTitle + ' — project image" />' +
+      '</figure>'
+    );
+  }
+
   document.addEventListener("DOMContentLoaded", function onReady() {
     const store = global.OKS_PORTFOLIO_DATA;
     const app = global.OKSSite;
@@ -434,7 +592,7 @@
       app.setContext(project.context);
 
       host.innerHTML =
-        '<section class="project-overview' + (project.slug === "wrapchat" ? ' project-overview--wrapchat' : "") + '">' +
+        '<section class="project-overview' + getProjectOverviewClass(project) + '">' +
         '  <div class="project-overview-copy">' +
         '    <div class="project-intro">' +
         '      <p class="eyebrow">' + project.category + "</p>" +
@@ -445,24 +603,7 @@
         '      <div class="project-labels" id="projectLabels"></div>' +
         "    </aside>" +
         "  </div>" +
-        '  <figure class="project-hero' + (project.slug === "wrapchat" ? ' project-hero--demo' : "") + '">' +
-        (project.slug === "wrapchat"
-          ? '<div class="phone-mockup-outer phone-mockup-outer--hero">' +
-            '  <div class="phone-mockup">' +
-            '    <div class="phone-chrome">' +
-            '      <div class="phone-notch"></div>' +
-            '      <iframe class="phone-screen"' +
-            '        src="../assets/projects/Wrapchat/WrapchatUI/wrapchat-app.html"' +
-            '        title="Wrapchat — interactive demo"' +
-            '        sandbox="allow-scripts allow-same-origin"' +
-            '        loading="lazy">' +
-            '      </iframe>' +
-            '      <div class="phone-home-bar"></div>' +
-            '    </div>' +
-            '  </div>' +
-            '</div>'
-          : '<img src="' + project.heroImage + '" alt="' + projectTitle + ' — project image" />') +
-        "  </figure>" +
+        renderProjectHero(project, projectTitle) +
         "</section>" +
         '<div class="project-sections" id="projectSections">' + renderProjectGallery(project) + "</div>" +
         '<footer class="project-foot">' +
@@ -489,6 +630,10 @@
 
       if (project.slug === "wrapchat") {
         setupWrapchatDemoFrame(host.querySelector(".project-hero .phone-screen"));
+      }
+
+      if (project.slug === "classic-stripes") {
+        setupClassicStripesDemoFrame(host.querySelector("[data-desktop-demo-frame]"));
       }
 
       const sections = document.getElementById("projectSections");
