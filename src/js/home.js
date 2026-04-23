@@ -13,6 +13,7 @@
   document.addEventListener("DOMContentLoaded", function onReady() {
     const store = global.OKS_PORTFOLIO_DATA;
     const app = global.OKSSite;
+    const touchPreviewQuery = window.matchMedia("(hover: none), (pointer: coarse)");
     const rail = document.getElementById("projectRail");
     const hero = document.getElementById("homeHero");
     const panel = document.getElementById("previewPanel");
@@ -28,9 +29,15 @@
     }
 
     let activeSlug = null;
+    let armedSlug = null;
+
+    function usesTwoTapProjectLinks() {
+      return touchPreviewQuery.matches || window.innerWidth <= 760;
+    }
 
     function clearActive() {
       activeSlug = null;
+      armedSlug = null;
       renderPreview(null);
       rail.querySelectorAll(".project-link").forEach(function reset(link) {
         link.classList.remove("is-active");
@@ -124,6 +131,18 @@
       });
 
       link.addEventListener("click", function onClick(event) {
+        if (usesTwoTapProjectLinks()) {
+          if (activeSlug === project.slug && armedSlug === project.slug) {
+            armedSlug = null;
+            return;
+          }
+
+          event.preventDefault();
+          setActive(project.slug);
+          armedSlug = project.slug;
+          return;
+        }
+
         if (activeSlug !== project.slug) {
           event.preventDefault();
           setActive(project.slug);
