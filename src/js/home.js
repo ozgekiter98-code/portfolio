@@ -6,6 +6,10 @@
     return tag;
   }
 
+  function getProjectDisplayTitle(project) {
+    return project.slug === "istinara" ? project.title.toUpperCase() : project.title;
+  }
+
   document.addEventListener("DOMContentLoaded", function onReady() {
     const store = global.OKS_PORTFOLIO_DATA;
     const app = global.OKSSite;
@@ -57,12 +61,12 @@
 
       panel.href = project.href;
       category.textContent = project.category;
-      title.textContent = project.title;
+      title.textContent = getProjectDisplayTitle(project);
       description.textContent = project.description;
-      image.src = project.slug === "wrapchat" ? project.logo : project.heroImage;
-      image.alt = project.title + " preview";
+      image.src = project.slug === "wrapchat" ? "../assets/projects/Wrapchat/WrapChat.png" : project.heroImage;
+      image.alt = getProjectDisplayTitle(project) + " preview";
       logo.src = project.logo;
-      logo.alt = project.title + " logo";
+      logo.alt = getProjectDisplayTitle(project) + " logo";
       tags.innerHTML = "";
       project.labels.forEach(function addTag(label) {
         tags.appendChild(createTag(label));
@@ -87,7 +91,19 @@
       });
     }
 
-    store.projects.forEach(function createLink(project, index) {
+    const homeProjects = store.projects
+      .slice()
+      .sort(function sortHomeProjects(projectA, projectB) {
+        const order = {
+          wrapchat: 0,
+          "classic-stripes": 1,
+          istinara: 2
+        };
+
+        return (order[projectA.slug] ?? projectA.index ?? 99) - (order[projectB.slug] ?? projectB.index ?? 99);
+      });
+
+    homeProjects.forEach(function createLink(project, index) {
       const link = document.createElement("a");
       link.className = "project-link";
       link.href = "./project.html?slug=" + encodeURIComponent(project.slug);
@@ -96,7 +112,7 @@
         "<small>" +
         String(index + 1).padStart(2, "0") +
         "</small><strong>" +
-        project.title +
+        getProjectDisplayTitle(project) +
         "</strong>";
 
       link.addEventListener("mouseenter", function onEnter() {

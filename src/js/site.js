@@ -169,24 +169,37 @@
       };
     }
 
+    // Mirror CSS: clamp(5rem, 9vw, 7rem) at 16px base
+    const headerPx = clamp(window.innerWidth * 0.09, 80, 112);
+    // Budget for hero + gap: total below header minus padding-top (headerPx/2) and project-strip (~128px)
+    const budgetForHeroAndGap = window.innerHeight - headerPx - (headerPx * 0.5) - 128;
+
     if (aspectRatio < 1.55) {
+      const idealHero = 550;
+      const idealGap = 25;
+      const heroHeight = Math.max(360, Math.min(idealHero, budgetForHeroAndGap - idealGap));
+      const pageGap = Math.max(12, Math.min(idealGap, budgetForHeroAndGap - heroHeight));
       return {
         contentMaxWidth: 1200,
         panelWidth: 925,
-        panelHeight: 450,
-        heroHeight: 550,
-        pageGap: 25,
+        panelHeight: Math.max(300, Math.min(450, heroHeight - 40)),
+        heroHeight: heroHeight,
+        pageGap: pageGap,
         navPillMinWidth: 125,
         projectPillMinWidth: 225
       };
     }
 
+    const idealHero = 600;
+    const idealGap = 50;
+    const heroHeight = Math.max(360, Math.min(idealHero, budgetForHeroAndGap - idealGap));
+    const pageGap = Math.max(12, Math.min(idealGap, budgetForHeroAndGap - heroHeight));
     return {
       contentMaxWidth: 1450,
       panelWidth: 1075,
-      panelHeight: 475,
-      heroHeight: 600,
-      pageGap: 50,
+      panelHeight: Math.max(300, Math.min(475, heroHeight - 40)),
+      heroHeight: heroHeight,
+      pageGap: pageGap,
       navPillMinWidth: 125,
       projectPillMinWidth: 250
     };
@@ -199,11 +212,11 @@
     const availableWidth = Math.max(cellSize, window.innerWidth - pagePadding * 2);
     const contentWidth = snapToGrid(Math.min(availableWidth, preset.contentMaxWidth), cellSize);
     const panelWidth = snapToGrid(Math.min(contentWidth, preset.panelWidth), cellSize);
-    const panelHeight = snapToNearestGrid(preset.panelHeight, cellSize);
-    const heroHeight = snapToNearestGrid(preset.heroHeight, cellSize);
+    const panelHeight = snapToGrid(preset.panelHeight, 8);
+    const heroHeight = snapToGrid(preset.heroHeight, 8);
     const navPillMinWidth = snapToNearestGrid(preset.navPillMinWidth, cellSize);
     const projectPillMinWidth = snapToNearestGrid(preset.projectPillMinWidth, cellSize);
-    const pageHomeGap = snapToNearestGrid(preset.pageGap, cellSize);
+    const pageHomeGap = snapToGrid(preset.pageGap, 8);
 
     document.documentElement.style.setProperty("--layout-grid-size-live", cellSize + "px");
     document.documentElement.style.setProperty("--content-width-live", contentWidth + "px");

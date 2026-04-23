@@ -79,6 +79,49 @@
     }
   }
 
+  function scaleWrapchatDemoToFrame(doc, iframe) {
+    if (!doc || !doc.body || !iframe) {
+      return;
+    }
+
+    if (!doc.getElementById("wrapchat-demo-scale")) {
+      const style = doc.createElement("style");
+      style.id = "wrapchat-demo-scale";
+      style.textContent =
+        "html, body {" +
+        "  width: 100% !important;" +
+        "  height: 100% !important;" +
+        "  min-height: 100% !important;" +
+        "  overflow: hidden !important;" +
+        "}" +
+        "body {" +
+        "  align-items: flex-start !important;" +
+        "  justify-content: center !important;" +
+        "}" +
+        "#root {" +
+        "  width: 393px !important;" +
+        "  min-height: 852px !important;" +
+        "  transform: scale(var(--wrapchat-demo-scale, 1));" +
+        "  transform-origin: top center;" +
+        "}" +
+        "#root > div {" +
+        "  width: 393px !important;" +
+        "  min-height: 852px !important;" +
+        "}" +
+        "@media (max-width: 360px) {" +
+        "  #root > div > div[style*='padding: 58px 24px 56px'] {" +
+        "    padding: 52px 22px 50px !important;" +
+        "  }" +
+        "}";
+      (doc.head || doc.body).appendChild(style);
+    }
+
+    const frameWidth = iframe.clientWidth || iframe.getBoundingClientRect().width || 393;
+    const frameHeight = iframe.clientHeight || iframe.getBoundingClientRect().height || 852;
+    const scale = Math.min(1, frameWidth / 393, frameHeight / 852);
+    doc.documentElement.style.setProperty("--wrapchat-demo-scale", scale.toFixed(3));
+  }
+
   function rewriteWrapchatDemoText(doc) {
     if (!doc || !doc.body) {
       return;
@@ -123,6 +166,7 @@
 
     function syncDemoText(doc) {
       hideWrapchatDemoParts(doc);
+      scaleWrapchatDemoToFrame(doc, iframe);
       rewriteWrapchatDemoText(doc);
       replaceWrapchatDemoLogo(doc);
     }
@@ -166,6 +210,7 @@
     }
 
     iframe.addEventListener("load", applyCleanup);
+    window.addEventListener("resize", applyCleanup, { passive: true });
     applyCleanup();
   }
 
@@ -284,6 +329,10 @@
     return tag;
   }
 
+  function getProjectDisplayTitle(project) {
+    return project.slug === "istinara" ? project.title.toUpperCase() : project.title;
+  }
+
   document.addEventListener("DOMContentLoaded", function onReady() {
     const store = global.OKS_PORTFOLIO_DATA;
     const app = global.OKSSite;
@@ -296,8 +345,10 @@
     function renderProjectPage() {
       const project = getProjectFromQuery(store);
       const nextProject = store.projects[(project.index + 1) % store.projects.length];
+      const projectTitle = getProjectDisplayTitle(project);
+      const nextProjectTitle = getProjectDisplayTitle(nextProject);
 
-      document.title = project.title + " | OKS Studio";
+      document.title = projectTitle + " | OKS Studio";
       document.body.dataset.context = project.context;
       app.setAccent(project.accentRgb);
       app.setContext(project.context);
@@ -307,11 +358,10 @@
         '  <div class="project-overview-copy">' +
         '    <div class="project-intro">' +
         '      <p class="eyebrow">' + project.category + "</p>" +
-        '      <h1 class="project-detail-title">' + project.title + "</h1>" +
+        '      <h1 class="project-detail-title">' + projectTitle + "</h1>" +
         "    </div>" +
         '    <p class="project-detail-description">' + project.description + "</p>" +
         '    <aside class="project-body-meta">' +
-        '      <dl class="project-meta-list" id="projectMetaList"></dl>' +
         '      <div class="project-labels" id="projectLabels"></div>' +
         "    </aside>" +
         "  </div>" +
@@ -331,32 +381,16 @@
             '    </div>' +
             '  </div>' +
             '</div>'
-          : '<img src="' + project.heroImage + '" alt="' + project.title + ' — project image" />') +
+          : '<img src="' + project.heroImage + '" alt="' + projectTitle + ' — project image" />') +
         "  </figure>" +
         "</section>" +
         '<div class="project-sections" id="projectSections"></div>' +
         '<footer class="project-foot">' +
-        '  <img class="project-logo-inline" src="' + project.logo + '" alt="' + project.title + ' logo" data-slug="' + project.slug + '" />' +
+        '  <img class="project-logo-inline" src="' + project.logo + '" alt="' + projectTitle + ' logo" data-slug="' + project.slug + '" />' +
         '  <div class="project-foot-nav">' +
-        '    <a class="project-next" href="./project.html?slug=' + encodeURIComponent(nextProject.slug) + '">Next: ' + nextProject.title + "</a>" +
+        '    <a class="project-next" href="./project.html?slug=' + encodeURIComponent(nextProject.slug) + '">Next: ' + nextProjectTitle + "</a>" +
         "  </div>" +
         "</footer>";
-
-      const metaList = document.getElementById("projectMetaList");
-      [
-        { label: "Category", value: project.category },
-        { label: "Context", value: project.context }
-      ].forEach(function appendMeta(item) {
-        const dt = document.createElement("dt");
-        dt.textContent = item.label;
-        const dd = document.createElement("dd");
-        dd.textContent = item.value;
-        const div = document.createElement("div");
-        div.className = "project-meta-item";
-        div.appendChild(dt);
-        div.appendChild(dd);
-        metaList.appendChild(div);
-      });
 
       const labels = document.getElementById("projectLabels");
       project.labels.forEach(function appendLabel(label) {
