@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>The Classic Stripes</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="site-header" id="site-header">
+    <button class="icon-btn" type="button" aria-label="Search" data-action="search">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="10.8" cy="10.8" r="6.5"></circle>
+        <path d="M15.5 15.5L21 21"></path>
+      </svg>
+    </button>
+
+    <a class="brand" href="#" aria-label="The Classic Stripes home">
+      <img class="brand__logo" src="public/assets/images/logo.png" alt="The Classic Stripes" />
+    </a>
+
+    <div class="header-actions">
+      <button class="icon-btn" type="button" aria-label="Account" data-action="account">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="8" r="3.2"></circle>
+          <path d="M5 20c0-3.4 3.2-5.3 7-5.3s7 1.9 7 5.3"></path>
+        </svg>
+      </button>
+      <button class="icon-btn" type="button" aria-label="Bag" data-action="bag">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M7 8h10l-1 11H8L7 8z"></path>
+          <path d="M9.5 8V6.8a2.5 2.5 0 1 1 5 0V8"></path>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" id="hero" aria-label="Hero media">
+      <video class="hero__media" id="hero-media" autoplay muted loop playsinline preload="metadata">
+        <source src="public/assets/video/banner.mp4" type="video/mp4" />
+      </video>
+    </section>
+
+    <section class="story" id="story" aria-label="Collector stories">
+      <div class="story__track" id="story-track">
+        <div class="story__stage" id="story-stage">
+          <div class="story-base" aria-hidden="true">
+            <img class="story-base__seats" src="public/assets/images/seats.png" alt="" />
+          </div>
+
+          <div class="story-dots" aria-hidden="true">
+            <span class="story-dot is-active" data-dot="0"></span>
+            <span class="story-dot" data-dot="1"></span>
+            <span class="story-dot" data-dot="2"></span>
+          </div>
+
+          <article class="scene" data-scene="0" aria-label="Reporter on seats">
+            <div class="scene__layout scene__layout--reporter">
+              <article class="story-panel story-panel--left scene-panel scene-panel--reporter">
+                <h2>Dein Vintage-Store für Fußballtrikots!</h2>
+                <p>
+                  Unsere Liebe zum Fußball begann vor dem Fernseher. Heute bringen wir ikonische Trikots
+                  zurück auf die Straße: geprüft, tragbar und voller Geschichte.
+                </p>
+                <a class="story-panel__cta" href="coming-soon.html">Alle Trikots</a>
+              </article>
+              <figure class="scene-character scene-character--reporter" aria-label="Reporter interviewing player">
+                <img class="scene-character__img" src="public/assets/images/reporter.png" alt="Reporter and football player" />
+              </figure>
+            </div>
+          </article>
+
+          <article class="scene" data-scene="1" aria-label="Supporter close-up on seats">
+            <div class="scene__layout scene__layout--supporter-right">
+              <article class="story-panel story-panel--left scene-panel scene-panel--supporter1">
+                <h2>Aufstieg, Abstieg, legendäre Tore</h2>
+                <p>
+                  Blokecore ist für uns kein Trend, sondern echte Fankultur. Von Nationalteams bis
+                  Matchworn-Stücken: Klassiker für alle, die Fußball nicht nur schauen, sondern leben.
+                </p>
+                <a class="story-panel__cta" href="coming-soon.html">Nationalmannschaften</a>
+              </article>
+              <figure class="scene-character scene-character--supporter1" aria-label="Supporters seated with scarf">
+                <img class="scene-character__img" src="public/assets/images/supporter1.png" alt="Supporters with scarf" />
+                <div class="hotspot-wrap" data-hotspot-wrap style="--x: 40%; --y: 66%;">
+                  <button class="hotspot" type="button" data-hotspot aria-expanded="false" aria-label="Preview crest detail"></button>
+                  <div class="product-preview" role="dialog" aria-label="Product preview">
+                    <img src="public/assets/images/placeholder3.png" alt="Classic crest detail" />
+                    <p class="product-preview__meta">1988-1990</p>
+                    <p class="product-preview__title">Classic Crest Embroidery</p>
+                  </div>
+                </div>
+              </figure>
+            </div>
+          </article>
+
+          <article class="scene" data-scene="2" aria-label="Supporter group on seats">
+            <div class="scene__layout scene__layout--supporter-start">
+              <article class="story-panel story-panel--right scene-panel scene-panel--supporter2">
+                <h2>Verein auf der Brust, Legende auf dem Rücken</h2>
+                <p>
+                  Wir sammeln Trikots mit Geschichte: Retro, Rare und New with Tags. Stücke aus jeder Ära,
+                  sorgfältig ausgewählt für Spieltag und Alltag.
+                </p>
+                <a class="story-panel__cta" href="coming-soon.html">Vereins-Trikots</a>
+              </article>
+              <figure class="scene-character scene-character--supporter2" aria-label="Supporters on seats">
+                <img class="scene-character__img" src="public/assets/images/supporter2.png" alt="Supporters celebrating in vintage shirts" />
+
+                <div class="hotspot-wrap" data-hotspot-wrap style="--x: 31%; --y: 62%;">
+                  <button class="hotspot" type="button" data-hotspot aria-expanded="false" aria-label="Preview Cantona shirt"></button>
+                  <div class="product-preview" role="dialog" aria-label="Product preview">
+                    <img src="public/assets/images/placeholder1.png" alt="Cantona 7 home shirt" />
+                    <p class="product-preview__meta">1993-1994</p>
+                    <p class="product-preview__title">Manchester United Home</p>
+                  </div>
+                </div>
+
+                <div class="hotspot-wrap" data-hotspot-wrap style="--x: 62%; --y: 54%;">
+                  <button class="hotspot" type="button" data-hotspot aria-expanded="false" aria-label="Preview retro match shirt"></button>
+                  <div class="product-preview" role="dialog" aria-label="Product preview">
+                    <img src="public/assets/images/product1.png" alt="Retro match shirt detail" />
+                    <p class="product-preview__meta">1984-1985</p>
+                    <p class="product-preview__title">Match Worn Inspired Classic</p>
+                  </div>
+                </div>
+              </figure>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="arrivals" aria-label="New arrivals">
+      <div class="arrivals__inner">
+        <article class="arrivals-card">
+          <h2>Unsere Neuzugange</h2>
+          <p>
+            Eine Meisterschaft, so unwahrscheinlich, dass selbst die Wettquote auf
+            "Elvis lebt" besser ist - ein Triple-Gewinner, der in seiner Heimat langst
+            abgeschrieben ist - und das Trikot des allerersten Champions-League-Titels uberhaupt.
+          </p>
+          <p>
+            Wir stellen jede Woche neue Klassiker ein.
+            <strong>Schau einfach ofter mal vorbei!</strong>
+          </p>
+          <a class="story-panel__cta" href="coming-soon.html">Neuzugange</a>
+        </article>
+
+        <figure class="arrivals__media">
+          <img src="public/assets/images/retropic.png" alt="Vintage football players" />
+        </figure>
+      </div>
+    </section>
+
+    <section class="reviews" id="reviews" aria-label="Customer reviews">
+      <div class="reviews__inner">
+        <h2>Ihr uber uns</h2>
+
+        <div class="reviews__carousel">
+          <button class="reviews__nav" type="button" aria-label="Previous review">&#8592;</button>
+
+          <div class="review-grid">
+            <article class="review-card">
+              <p>
+                Meine Bestellung ist angekommen und wollte einfach kurz Danke sagen [...]
+                Habe mich sehr daruber gefreut und bin mir sicher, dass sich das Geburtstags
+                'Kind' noch mehr freuen wird. DANKE!!!
+              </p>
+              <p class="review-card__stars">★★★★★</p>
+              <p class="review-card__author">(Antonia L., Heilbronn)</p>
+            </article>
+
+            <article class="review-card">
+              <p>
+                Vielen Dank fur das schnelle rausschicken des Pakets, kam vorhin an und
+                hab mich sehr gefreut. Passt perfekt und [...]
+              </p>
+              <p class="review-card__stars">★★★★★</p>
+              <p class="review-card__author">(Marc P., Rostock)</p>
+            </article>
+          </div>
+
+          <button class="reviews__nav" type="button" aria-label="Next review">&#8594;</button>
+        </div>
+
+        <div class="reviews__social" aria-label="Social links">
+          <a href="#" aria-label="Facebook">f</a>
+          <a href="#" aria-label="Instagram">◎</a>
+        </div>
+
+        <div class="news">
+          <h3>News &amp; Infos</h3>
+          <form class="news__form" action="#" method="post">
+            <label class="sr-only" for="news-email">Email</label>
+            <input id="news-email" type="email" name="email" placeholder="E-Mail" />
+            <button type="submit" aria-label="Submit email">&#8594;</button>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <button class="chat-fab" id="chat-fab" type="button" aria-label="Open chat" aria-expanded="false">
+    <span class="chat-fab__icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24">
+        <path d="M4 5h16v10H10l-6 4V5z"></path>
+        <path d="M8 10h8"></path>
+      </svg>
+    </span>
+    <span class="chat-fab__label">Chat</span>
+    <span class="chat-fab__badge" id="chat-badge">1</span>
+  </button>
+
+  <aside class="chat-panel" id="chat-panel" aria-hidden="true">
+    <p>How can we help you today?</p>
+    <button class="chat-panel__close" id="chat-close" type="button">Close</button>
+  </aside>
+
+  <script src="script.js"></script>
+</body>
+</html>
