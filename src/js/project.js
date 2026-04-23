@@ -9,7 +9,7 @@
     },
     "classic-stripes": {
       folder: "TheClassicStripes",
-      files: []
+      files: ["1.png", "2.png", "3.png", "4.png", "5.png", "6.png"]
     },
     wrapchat: {
       folder: "Wrapchat",
@@ -460,7 +460,7 @@
 
     return gallery.files.map(function toGalleryItem(filename, index) {
       return {
-        src: MEDIA_BLOB_BASE_URL + "/Gallery/" + gallery.folder + "/" + filename,
+        src: gallery.basePath ? gallery.basePath + "/" + filename : MEDIA_BLOB_BASE_URL + "/Gallery/" + gallery.folder + "/" + filename,
         alt: getProjectDisplayTitle(project) + " gallery image " + String(index + 1).padStart(2, "0")
       };
     });
@@ -468,13 +468,15 @@
 
   function renderProjectGallery(project) {
     const galleryItems = getProjectGallery(project);
+    const galleryModifierClass = project.slug === "classic-stripes" ? " project-gallery-section--classic-stripes" : "";
+    const galleryItemModifierClass = project.slug === "classic-stripes" ? " project-gallery-item--square" : "";
 
     if (!galleryItems.length) {
       return "";
     }
 
     return (
-      '<section class="project-content-section project-gallery-section" aria-label="' + getProjectDisplayTitle(project) + ' gallery">' +
+      '<section class="project-content-section project-gallery-section' + galleryModifierClass + '" aria-label="' + getProjectDisplayTitle(project) + ' gallery">' +
       '  <div class="project-section-head">' +
       '    <p class="eyebrow">Gallery</p>' +
       '  </div>' +
@@ -485,7 +487,7 @@
       galleryItems
         .map(function renderGalleryItem(item) {
           return (
-            '<figure class="project-gallery-item">' +
+            '<figure class="project-gallery-item' + galleryItemModifierClass + '">' +
             '  <img src="' + item.src + '" alt="' + item.alt + '" loading="lazy" />' +
             "</figure>"
           );
