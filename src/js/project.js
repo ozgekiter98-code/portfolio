@@ -1,4 +1,27 @@
 (function attachProjectPage(global) {
+  const MEDIA_BLOB_BASE_URL = "https://yyukhmkupbovs5lx.public.blob.vercel-storage.com/assets/Media";
+  const PROJECT_GALLERIES = {
+    istinara: {
+      folder: "ISTINARA",
+      files: []
+    },
+    "classic-stripes": {
+      folder: "TheClassicStripes",
+      files: []
+    },
+    wrapchat: {
+      folder: "Wrapchat",
+      files: [
+        "post_01.png",
+        "post_02.png",
+        "post_03.png",
+        "post_04.png",
+        "post_05.png",
+        "post_06.png"
+      ]
+    }
+  };
+
   const WRAPCHAT_DEMO_TEXT_REPLACEMENTS = [
     {
       from: "The Ghost Award",
@@ -70,10 +93,19 @@
         "display: none !important;" +
         "}" +
         'div[style*="position: absolute"][style*="top: 14px"][style*="z-index: 10"][style*="border-radius: 999px"][style*="padding: 4px 12px"] {' +
+        "top: 60px !important;" +
         "left: 50% !important;" +
         "right: auto !important;" +
         "transform: translateX(-50%) !important;" +
         "text-align: center !important;" +
+        "}" +
+        'button[style*="position: absolute"][style*="top: 10px"][style*="right: 14px"][style*="width: 34px"][style*="height: 34px"] {' +
+        "top: 54px !important;" +
+        "right: 18px !important;" +
+        "}" +
+        'button[style*="position: absolute"][style*="top: 10px"][style*="left: 14px"][style*="padding: 7px 14px"] {' +
+        "top: 54px !important;" +
+        "left: 18px !important;" +
         "}";
       (doc.head || doc.body).appendChild(style);
     }
@@ -322,6 +354,54 @@
     setActiveIndex(activeIndex);
   }
 
+  function getProjectGallery(project) {
+    const gallery = PROJECT_GALLERIES[project.slug];
+
+    if (!gallery || !gallery.files.length) {
+      return [];
+    }
+
+    return gallery.files.map(function toGalleryItem(filename, index) {
+      return {
+        src: MEDIA_BLOB_BASE_URL + "/Gallery/" + gallery.folder + "/" + filename,
+        alt: getProjectDisplayTitle(project) + " gallery image " + String(index + 1).padStart(2, "0")
+      };
+    });
+  }
+
+  function renderProjectGallery(project) {
+    const galleryItems = getProjectGallery(project);
+
+    if (!galleryItems.length) {
+      return "";
+    }
+
+    return (
+      '<section class="project-content-section project-gallery-section" aria-label="' + getProjectDisplayTitle(project) + ' gallery">' +
+      '  <div class="project-section-head">' +
+      '    <p class="eyebrow">Gallery</p>' +
+      '  </div>' +
+      '  <div class="project-gallery-shell" id="projectGallery">' +
+      '    <button class="project-gallery-arrow is-prev" type="button" aria-label="Previous gallery image">&lsaquo;</button>' +
+      '    <div class="project-gallery-rail">' +
+      '      <div class="project-gallery-track">' +
+      galleryItems
+        .map(function renderGalleryItem(item) {
+          return (
+            '<figure class="project-gallery-item">' +
+            '  <img src="' + item.src + '" alt="' + item.alt + '" loading="lazy" />' +
+            "</figure>"
+          );
+        })
+        .join("") +
+      "      </div>" +
+      "    </div>" +
+      '    <button class="project-gallery-arrow is-next" type="button" aria-label="Next gallery image">&rsaquo;</button>' +
+      "  </div>" +
+      "</section>"
+    );
+  }
+
   function createTag(label) {
     const tag = document.createElement("span");
     tag.className = "meta-tag";
@@ -384,7 +464,7 @@
           : '<img src="' + project.heroImage + '" alt="' + projectTitle + ' — project image" />') +
         "  </figure>" +
         "</section>" +
-        '<div class="project-sections" id="projectSections"></div>' +
+        '<div class="project-sections" id="projectSections">' + renderProjectGallery(project) + "</div>" +
         '<footer class="project-foot">' +
         '  <img class="project-logo-inline" src="' + project.logo + '" alt="' + projectTitle + ' logo" data-slug="' + project.slug + '" />' +
         '  <div class="project-foot-nav">' +
@@ -409,12 +489,15 @@
 
       if (project.slug === "wrapchat") {
         setupWrapchatDemoFrame(host.querySelector(".project-hero .phone-screen"));
-        const sections = document.getElementById("projectSections");
-        sections.remove();
-      } else {
-        const sections = document.getElementById("projectSections");
+      }
+
+      const sections = document.getElementById("projectSections");
+      if (sections && !sections.children.length) {
         sections.remove();
       }
+
+      const gallery = document.getElementById("projectGallery");
+      initProjectGallery(gallery);
     }
 
     document.addEventListener("oks:project-data-change", renderProjectPage);

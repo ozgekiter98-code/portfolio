@@ -977,6 +977,7 @@ html[data-theme="dark"] .preview-copy {
 
 .page-project {
   display: block;
+  padding-top: calc(var(--header-offset) * 0.5);
 }
 
 .project-detail {
@@ -1178,11 +1179,11 @@ html[data-theme="dark"] .project-logo-inline:not([data-slug="wrapchat"]) {
 
 .phone-notch {
   position: absolute;
-  top: 14px;
+  top: 6px;
   left: 50%;
   z-index: 2;
-  width: 112px;
-  height: 34px;
+  width: 96px;
+  height: 28px;
   transform: translateX(-50%);
   border-radius: 999px;
   background: #090a0d;
@@ -1195,9 +1196,9 @@ html[data-theme="dark"] .project-logo-inline:not([data-slug="wrapchat"]) {
   content: '';
   position: absolute;
   top: 50%;
-  right: 16px;
-  width: 10px;
-  height: 10px;
+  right: 13px;
+  width: 8px;
+  height: 8px;
   transform: translateY(-50%);
   border-radius: 50%;
   background: #151922;
@@ -1313,6 +1314,7 @@ html[data-theme="dark"] .project-logo-inline:not([data-slug="wrapchat"]) {
 }
 
 .project-gallery-item {
+  margin: 0;
   flex: 0 0 clamp(24rem, 34vw, 28.5rem);
   overflow: hidden;
   border-radius: var(--radius);
@@ -1523,6 +1525,10 @@ html[data-theme="dark"] .nav-hamburger:focus-visible {
 @media (max-width: 860px) {
   .page {
     padding-top: calc(var(--header-offset) + var(--space-md));
+  }
+
+  .page-project {
+    padding-top: calc((var(--header-offset) + var(--space-md)) * 0.5);
   }
 
   .about-grid {
