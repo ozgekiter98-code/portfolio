@@ -326,32 +326,6 @@
     });
   }
 
-  function hideClassicStripesBannerVideo(doc) {
-    if (!doc || !doc.body) {
-      return;
-    }
-
-    const heroMedia = doc.getElementById("hero-media");
-    if (heroMedia && typeof heroMedia.pause === "function") {
-      heroMedia.pause();
-      heroMedia.removeAttribute("autoplay");
-      heroMedia.removeAttribute("loop");
-    }
-
-    if (!doc.getElementById("classic-stripes-demo-cleanup")) {
-      const style = doc.createElement("style");
-      style.id = "classic-stripes-demo-cleanup";
-      style.textContent =
-        "#hero {" +
-        "display: none !important;" +
-        "}" +
-        "main {" +
-        "padding-top: 0 !important;" +
-        "}";
-      (doc.head || doc.body).appendChild(style);
-    }
-  }
-
   function setupClassicStripesBlobAssets(iframe) {
     if (!iframe) {
       return;
@@ -359,9 +333,7 @@
 
     function applyAssets() {
       try {
-        const doc = iframe.contentDocument;
-        applyClassicStripesBlobAssets(doc);
-        hideClassicStripesBannerVideo(doc);
+        applyClassicStripesBlobAssets(iframe.contentDocument);
       } catch (_error) {
         // Ignore iframe access issues.
       }
