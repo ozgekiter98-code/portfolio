@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>OKS Studio</title>
+    <meta
+      name="description"
+      content="OKS Studio portfolio by Ozge Kiter, bringing architecture, identity, and digital work into one cohesive practice."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Allerta+Stencil&family=Manrope:wght@400;500;600;700&family=Oxanium:wght@800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="https://use.typekit.net/myd6mya.css" />
+    <link rel="stylesheet" href="./styles.css" />
+    <script defer src="../data/projects.js"></script>
+    <script defer src="./js/theme.js"></script>
+    <script defer src="./js/background.js"></script>
+    <script defer src="./js/site.js"></script>
+    <script defer src="./js/home.js"></script>
+  </head>
+  <body data-page="home" data-context="Digital">
+    <canvas id="bgCanvas" class="bg-canvas" aria-hidden="true"></canvas>
+    <div class="grid-overlay" aria-hidden="true"></div>
+
+    <div class="header-wrap">
+      <header class="site-header">
+        <a class="brand-link" href="./index.html" aria-label="OKS Studio home">
+          <img class="brand-logo" src="../assets/logos/OKSLogo.svg" alt="OKS Studio" />
+        </a>
+
+        <div class="header-actions">
+          <nav class="site-nav" id="siteNav" aria-label="Primary">
+            <a class="nav-link" data-route="home" href="./index.html">Home</a>
+            <a class="nav-link" data-route="about" href="./about.html">About Me</a>
+            <a class="nav-link" data-route="contact" href="./contact.html">Contact</a>
+            <button class="nav-link nav-lab-toggle" id="accentLabToggle" type="button">Accent Lab</button>
+          </nav>
+
+          <button
+            class="nav-hamburger"
+            id="navHamburger"
+            type="button"
+            aria-label="Toggle navigation"
+            aria-expanded="false"
+            aria-controls="siteNav"
+          >
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+          </button>
+
+          <button
+            class="theme-toggle"
+            id="themeToggle"
+            type="button"
+            aria-label="Toggle theme"
+            aria-pressed="false"
+          >
+            <span class="theme-toggle-track" aria-hidden="true">
+              <span class="theme-toggle-thumb"></span>
+            </span>
+          </button>
+        </div>
+      </header>
+    </div>
+
+    <main class="page page-home">
+      <section class="home-hero" id="homeHero">
+        <div class="hero-copy">
+          <h1 class="hero-title" aria-label="Selected Works">SELECTED WORKS</h1>
+        </div>
+
+        <a
+          class="preview-panel project-card is-empty"
+          id="previewPanel"
+          href="./project.html"
+          aria-live="polite"
+        >
+          <div class="preview-media-wrap project-media-wrap">
+            <img class="preview-media project-media" id="previewImage" alt="" />
+          </div>
+
+          <div class="preview-copy project-copy">
+            <div class="preview-copy-inner copy-inner">
+              <p class="preview-kicker eyebrow" id="previewCategory">OKS Studio</p>
+              <h2 class="preview-title" id="previewTitle">Selected work</h2>
+              <p class="preview-description" id="previewDescription">
+                Brand worlds, commerce systems, and learning products shaped with the same quiet
+                spatial thinking.
+              </p>
+            </div>
+
+            <div class="preview-tail project-tail">
+              <div class="preview-meta project-meta tag-row" id="previewTags"></div>
+              <div class="preview-logo-wrap project-mark">
+                <img class="preview-logo project-mark-logo" id="previewLogo" alt="" />
+              </div>
+            </div>
+          </div>
+        </a>
+      </section>
+
+      <section class="project-strip" aria-label="Selected projects">
+        <div class="project-strip-label">Projects</div>
+        <div class="project-rail" id="projectRail"></div>
+      </section>
+    </main>
+  </body>
+</html>
