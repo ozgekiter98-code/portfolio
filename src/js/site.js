@@ -305,6 +305,22 @@
     }
 
     let legacySlug = null;
+    function getWrapchatDecisions(project) {
+      const decisions = Array.isArray(project.decisions) ? project.decisions.slice() : [];
+      const hasToolDecision = decisions.some(function hasDecision(decision) {
+        return decision && decision.heading === "Tools that shape the product";
+      });
+
+      if (!hasToolDecision) {
+        decisions.push({
+          heading: "Tools that shape the product",
+          body: "I built small tools around the product to help me understand, test, and refine it faster. The workflow became part of the design process: not only making the app, but making the systems that helped the app become clearer."
+        });
+      }
+
+      return decisions;
+    }
+
     const projects = store.projects.map(function normalizeProject(project, index) {
       const isWrapchat = project.slug === "wrapchat" || project.slug === "linpile" || project.title === "Linpile";
 
@@ -322,6 +338,7 @@
 
       return Object.assign({}, project, wrapchatProject, {
         accentRgb: accentConfig.projectAccentBySlug.wrapchat || project.accentRgb,
+        decisions: getWrapchatDecisions(project),
         index: index,
         href: "./project.html?slug=" + encodeURIComponent(wrapchatProject.slug)
       });
@@ -401,6 +418,47 @@
     const grid = document.getElementById("accentLabGrid");
     const resetButton = document.getElementById("accentLabReset");
     const closeButton = document.getElementById("accentLabClose");
+    let dockTicking = false;
+
+    function paintColorInput(input) {
+      if (input) {
+        input.style.backgroundColor = input.value;
+      }
+    }
+
+    function getPagePadding() {
+      return getRootNumber("--page-padding", 16);
+    }
+
+    function getDockFooter() {
+      return document.querySelector(".project-foot, footer");
+    }
+
+    function syncAccentLabDock() {
+      const footer = getDockFooter();
+      const pagePadding = getPagePadding();
+      let bottomOffset = pagePadding;
+
+      if (footer) {
+        const footerRect = footer.getBoundingClientRect();
+        const overlap = window.innerHeight - footerRect.top;
+        if (overlap > 0) {
+          bottomOffset = pagePadding + overlap;
+        }
+      }
+
+      document.documentElement.style.setProperty("--accent-lab-bottom-offset", bottomOffset + "px");
+      dockTicking = false;
+    }
+
+    function requestAccentLabDockSync() {
+      if (dockTicking) {
+        return;
+      }
+
+      dockTicking = true;
+      window.requestAnimationFrame(syncAccentLabDock);
+    }
 
     function setOpen(nextOpen) {
       panel.classList.toggle("is-open", nextOpen);
@@ -438,8 +496,10 @@
         '" />';
 
       const input = label.querySelector("input");
+      paintColorInput(input);
       input.addEventListener("input", function onInput(event) {
         setControlValue(definition, event.currentTarget.value);
+        paintColorInput(event.currentTarget);
         saveAccentConfig();
         syncAccentSystem();
       });
@@ -451,6 +511,7 @@
       resetAccentConfig();
       panel.querySelectorAll(".accent-lab-input").forEach(function updateInput(input, index) {
         input.value = getControlValue(ACCENT_CONTROL_DEFS[index]);
+        paintColorInput(input);
       });
       syncAccentSystem();
     });
@@ -466,6 +527,14 @@
 
       setOpen(false);
     });
+
+    window.addEventListener("scroll", requestAccentLabDockSync, { passive: true });
+    window.addEventListener("resize", requestAccentLabDockSync, { passive: true });
+    document.addEventListener("oks:project-data-change", requestAccentLabDockSync);
+
+    const dockObserver = new MutationObserver(requestAccentLabDockSync);
+    dockObserver.observe(document.body, { childList: true, subtree: true });
+    requestAccentLabDockSync();
   }
 
   function initScrollHeader() {

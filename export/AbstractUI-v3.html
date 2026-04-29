@@ -1,0 +1,1625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Abstract UI Transitions v3</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #1a1a1a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+  }
+
+  /* ─── Outer window shell ─── */
+  #app-window {
+    position: relative;
+    width: 580px;
+    height: 678px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 40px 120px rgba(0,0,0,.75);
+    transform-origin: top center;
+  }
+
+  /* ─── Persistent chrome overlay (traffic lights + title bar) ─── */
+  #win-chrome {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 40px;
+    background: #2b2f32;
+    border-bottom: 1px solid #1a1d1f;
+    z-index: 50;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    padding-left: 16px;
+    gap: 8px;
+  }
+  .tl { width: 13px; height: 13px; border-radius: 50%; }
+  .tl-red    { background: #f46e5a; }
+  .tl-yellow { background: #fdc960; }
+  .tl-green  { background: #6eb360; }
+
+  /* Title text in chrome */
+  .chrome-title {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 12px;
+    color: #8a8f94;
+    letter-spacing: .3px;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+
+  /* ─── Cursor ─── */
+  #cursor-el {
+    position: absolute;
+    width: 44px;
+    height: 44px;
+    z-index: 60;
+    pointer-events: none;
+    left: 200px;
+    top: 200px;
+    transform-origin: 50% 12%;
+    filter: brightness(0) invert(1)
+            drop-shadow(0 2px 4px rgba(0,0,0,.7))
+            drop-shadow(0 0px 8px rgba(255,255,255,.25));
+  }
+
+  /* ─── Scene container ─── */
+  #scene-wrap {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+  }
+
+  .scene {
+    position: absolute;
+    inset: 0;
+    top: 40px; /* below chrome */
+    opacity: 0;
+    pointer-events: none;
+  }
+  .scene.active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* ─── Filter utilities for icons ─── */
+  .ico-dark   { filter: brightness(0) invert(.55); }
+  .ico-bright { filter: brightness(0) invert(.82); }
+  .ico-dim    { filter: brightness(0) invert(.38); }
+  .ico-orange { filter: brightness(0) invert(.8) sepia(1) saturate(4) hue-rotate(15deg); }
+  .ico-blue   { filter: brightness(0) invert(.75) sepia(1) saturate(3) hue-rotate(195deg); }
+
+  /* ══════════════════════════════════════
+     PHOTOSHOP SCENE
+  ══════════════════════════════════════ */
+  #scene-ps {
+    background: #2c2f31;
+    display: flex;
+  }
+
+  /* PS Left toolbar */
+  #ps-toolbar {
+    width: 48px;
+    background: #3d4042;
+    border-right: 1px solid #292b2d;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 14px;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+  .ps-tool {
+    width: 32px;
+    height: 32px;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .ps-tool img { width: 20px; height: 20px; }
+  .ps-tool.active { background: #545859; }
+
+  /* PS Right panels */
+  #ps-right {
+    width: 160px;
+    background: #3d4042;
+    border-left: 1px solid #292b2d;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+  }
+  .ps-panel-header {
+    height: 34px;
+    background: #353839;
+    border-bottom: 1px solid #292b2d;
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    font-size: 11px;
+    color: #9a9ea1;
+    font-family: -apple-system, sans-serif;
+    letter-spacing: .3px;
+  }
+  .ps-panel-body {
+    padding: 12px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .ps-layer {
+    height: 28px;
+    background: #494d50;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    padding: 0 8px;
+    gap: 7px;
+  }
+  .ps-layer-thumb {
+    width: 20px; height: 20px;
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+  .ps-layer span {
+    font-size: 10px;
+    color: #9ea2a5;
+    font-family: -apple-system, sans-serif;
+  }
+  .ps-layer.sel { background: #1473e6; }
+  .ps-layer.sel span { color: #fff; }
+  .ps-swatch-row {
+    display: flex;
+    gap: 6px;
+    padding: 4px 0;
+    flex-wrap: wrap;
+  }
+  .ps-swatch {
+    width: 18px; height: 18px;
+    border-radius: 3px;
+    border: 1px solid #555;
+  }
+  .ps-color-block {
+    display: flex;
+    gap: 0;
+    margin-top: 8px;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .ps-color-block div {
+    flex: 1; height: 28px;
+  }
+
+  /* PS Canvas */
+  #ps-canvas {
+    flex: 1;
+    background: #404346;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+  }
+  #ps-canvas-inner {
+    width: 300px;
+    height: 360px;
+    background: #f5f2ef;
+    border-radius: 2px;
+    position: relative;
+    overflow: hidden;
+  }
+  .ps-circle {
+    position: absolute;
+    width: 180px; height: 180px;
+    border-radius: 50%;
+    background: #efd07b;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  .ps-rect {
+    position: absolute;
+    width: 80px; height: 155px;
+    background: #775487;
+    border-radius: 6px;
+    top: 28px;
+    right: 28px;
+  }
+  /* Selection handles on canvas */
+  .sel-handle {
+    position: absolute;
+    width: 7px; height: 7px;
+    background: #fff;
+    border: 1px solid #1473e6;
+    border-radius: 1px;
+  }
+
+  /* ══════════════════════════════════════
+     AFTER EFFECTS SCENE
+  ══════════════════════════════════════ */
+  #scene-ae {
+    background: #2b2e30;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* AE top area */
+  #ae-top {
+    flex: 1;
+    display: flex;
+    min-height: 0;
+  }
+
+  /* AE left panel */
+  #ae-left {
+    width: 200px;
+    background: #343739;
+    border-right: 1px solid #222426;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+  }
+  .ae-panel-tab {
+    height: 30px;
+    background: #2f3235;
+    border-bottom: 1px solid #222426;
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    font-size: 11px;
+    color: #8d9196;
+    font-family: -apple-system, sans-serif;
+    gap: 10px;
+  }
+  .ae-tab-active {
+    color: #c9cdd0;
+    border-bottom: 2px solid #5f90e3;
+    padding-top: 2px;
+  }
+  .ae-project-item {
+    height: 26px;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    gap: 7px;
+    font-size: 10.5px;
+    color: #9ea3a8;
+    font-family: -apple-system, sans-serif;
+    border-bottom: 1px solid #2d3033;
+  }
+  .ae-project-item.sel { background: #1473e6; color: #fff; }
+  .ae-project-icon {
+    width: 14px; height: 14px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+  .ae-effect-row {
+    height: 22px;
+    display: flex;
+    align-items: center;
+    padding: 0 10px 0 22px;
+    font-size: 10px;
+    color: #7a7f85;
+    font-family: -apple-system, sans-serif;
+  }
+
+  /* AE center: preview + controls */
+  #ae-center {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: #2b2e30;
+  }
+  #ae-preview {
+    flex: 1;
+    background: #323537;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-bottom: 1px solid #222426;
+  }
+  #ae-canvas-inner {
+    width: 230px;
+    height: 170px;
+    background: #f5f2ef;
+    position: relative;
+    overflow: hidden;
+  }
+  .ae-circle {
+    position: absolute;
+    width: 120px; height: 120px;
+    border-radius: 50%;
+    background: #efd07b;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  .ae-rect {
+    position: absolute;
+    width: 65px; height: 120px;
+    background: #775487;
+    border-radius: 5px;
+    bottom: 10px;
+    right: 14px;
+  }
+  #ae-controls {
+    height: 36px;
+    background: #2f3235;
+    border-bottom: 1px solid #1e2022;
+    display: flex;
+    align-items: center;
+    padding: 0 14px;
+    gap: 12px;
+  }
+  .ae-ctrl-btn {
+    width: 18px; height: 18px;
+    border-radius: 3px;
+    background: #454a4e;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .ae-ctrl-btn div {
+    width: 0; height: 0;
+    border-style: solid;
+    border-width: 4px 0 4px 7px;
+    border-color: transparent transparent transparent #9aa0a6;
+  }
+  .ae-timecode {
+    font-size: 11px;
+    color: #5f90e3;
+    font-family: 'SF Mono', monospace;
+    letter-spacing: .5px;
+    margin-left: auto;
+  }
+
+  /* AE right panel */
+  #ae-right {
+    width: 130px;
+    background: #343739;
+    border-left: 1px solid #222426;
+    flex-shrink: 0;
+  }
+  .ae-effect-hdr {
+    height: 30px;
+    background: #2f3235;
+    border-bottom: 1px solid #222426;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    font-size: 11px;
+    color: #8d9196;
+    font-family: -apple-system, sans-serif;
+  }
+  .ae-prop-row {
+    height: 24px;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    justify-content: space-between;
+    border-bottom: 1px solid #2d3033;
+  }
+  .ae-prop-row span:first-child {
+    font-size: 10px; color: #7a7f85; font-family: -apple-system, sans-serif;
+  }
+  .ae-prop-row span:last-child {
+    font-size: 10px; color: #5f90e3; font-family: 'SF Mono', monospace;
+  }
+
+  /* AE Timeline */
+  #ae-timeline {
+    height: 200px;
+    background: #252729;
+    border-top: 1px solid #1e2022;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+  }
+  #ae-tl-header {
+    height: 26px;
+    background: #2a2d2f;
+    border-bottom: 1px solid #1e2022;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    gap: 8px;
+  }
+  .ae-tl-btn {
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: #454a4e;
+  }
+  .ae-tl-timescale {
+    flex: 1;
+    height: 16px;
+    margin-left: 120px;
+    display: flex;
+    align-items: center;
+    gap: 0;
+  }
+  .ae-tl-tick {
+    flex: 1;
+    height: 8px;
+    border-left: 1px solid #454a4e;
+    font-size: 8px;
+    color: #555a5e;
+    font-family: 'SF Mono', monospace;
+    padding-left: 2px;
+    display: flex;
+    align-items: flex-end;
+  }
+  #ae-tl-body {
+    flex: 1;
+    display: flex;
+    position: relative;
+  }
+  #ae-tl-labels {
+    width: 120px;
+    border-right: 1px solid #1e2022;
+    display: flex;
+    flex-direction: column;
+  }
+  .ae-layer-label {
+    height: 28px;
+    display: flex;
+    align-items: center;
+    padding: 0 8px;
+    border-bottom: 1px solid #1e2022;
+    gap: 5px;
+  }
+  .ae-layer-label .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .ae-layer-label span {
+    font-size: 9.5px; color: #7a7f85;
+    font-family: -apple-system, sans-serif;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+  #ae-tl-tracks {
+    flex: 1;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+  .ae-track {
+    height: 28px;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #1e2022;
+    position: relative;
+    padding: 3px 4px;
+  }
+  .ae-clip {
+    position: absolute;
+    height: 18px;
+    border-radius: 3px;
+    top: 5px;
+  }
+  .ae-diamond {
+    position: absolute;
+    width: 7px; height: 7px;
+    top: 50%; transform: translateY(-50%) rotate(45deg);
+    background: #a4a1f4;
+  }
+  /* Static playhead */
+  .ae-playhead {
+    position: absolute;
+    top: 0; bottom: 0;
+    width: 1px;
+    background: #5f90e3;
+    left: 25%;
+    pointer-events: none;
+  }
+  .ae-playhead::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -4px;
+    width: 0; height: 0;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-top: 6px solid #5f90e3;
+  }
+
+  /* ══════════════════════════════════════
+     BLENDER SCENE
+  ══════════════════════════════════════ */
+  #scene-bl {
+    background: #1d1d1d;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Blender top menu bar */
+  #bl-menubar {
+    height: 26px;
+    background: #262626;
+    border-bottom: 1px solid #111;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    gap: 14px;
+    flex-shrink: 0;
+  }
+  .bl-menu-item {
+    font-size: 11px;
+    color: #9a9ea2;
+    font-family: -apple-system, sans-serif;
+    cursor: default;
+  }
+  .bl-menu-item:first-child { color: #d4803b; }
+
+  /* Blender main area */
+  #bl-main {
+    flex: 1;
+    display: flex;
+    min-height: 0;
+  }
+
+  /* Blender left tools */
+  #bl-tools {
+    width: 36px;
+    background: #252525;
+    border-right: 1px solid #111;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 8px;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+  .bl-tool {
+    width: 28px; height: 28px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .bl-tool img { width: 18px; height: 18px; }
+  .bl-tool.active { background: #383838; }
+
+  /* Blender viewport */
+  #bl-viewport {
+    flex: 1;
+    background: #3d3d3d;
+    position: relative;
+    overflow: hidden;
+  }
+  #bl-viewport-inner {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  /* Grid floor */
+  #bl-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px);
+    background-size: 30px 30px;
+  }
+  /* Static 3D cube (CSS) */
+  #bl-cube-wrap {
+    position: relative;
+    width: 110px;
+    height: 110px;
+    transform: translateZ(0);
+  }
+  #bl-cube {
+    width: 110px;
+    height: 110px;
+    position: relative;
+    transform-style: preserve-3d;
+    transform: rotateX(-28deg) rotateY(38deg);
+  }
+  .bl-face {
+    position: absolute;
+    width: 110px;
+    height: 110px;
+    border: 1.5px solid rgba(255,255,255,.15);
+  }
+  .bl-face.front  { background: rgba(130,130,130,.6); transform: translateZ(55px); }
+  .bl-face.back   { background: rgba(90,90,90,.5); transform: rotateY(180deg) translateZ(55px); }
+  .bl-face.right  { background: rgba(110,110,110,.55); transform: rotateY(90deg) translateZ(55px); }
+  .bl-face.left   { background: rgba(80,80,80,.5); transform: rotateY(-90deg) translateZ(55px); }
+  .bl-face.top    { background: rgba(160,160,160,.6); transform: rotateX(90deg) translateZ(55px); }
+  .bl-face.bottom { background: rgba(70,70,70,.45); transform: rotateX(-90deg) translateZ(55px); }
+
+  /* Viewport overlay info */
+  .bl-viewport-label {
+    position: absolute;
+    font-size: 10px;
+    color: rgba(255,255,255,.45);
+    font-family: -apple-system, sans-serif;
+    top: 8px; left: 10px;
+    pointer-events: none;
+  }
+  .bl-viewport-nav {
+    position: absolute;
+    top: 8px; right: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    pointer-events: none;
+  }
+  .bl-nav-btn {
+    width: 22px; height: 22px;
+    background: rgba(80,80,80,.65);
+    border-radius: 3px;
+    border: 1px solid rgba(255,255,255,.1);
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  /* Blender right panel */
+  #bl-right {
+    width: 170px;
+    background: #252525;
+    border-left: 1px solid #111;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+  }
+  .bl-panel-tab-row {
+    height: 28px;
+    background: #1e1e1e;
+    border-bottom: 1px solid #111;
+    display: flex;
+    align-items: center;
+    padding: 0 8px;
+    gap: 6px;
+  }
+  .bl-panel-tab {
+    height: 22px;
+    padding: 0 8px;
+    border-radius: 3px;
+    font-size: 10.5px;
+    color: #888;
+    display: flex; align-items: center;
+    font-family: -apple-system, sans-serif;
+  }
+  .bl-panel-tab.active { background: #383838; color: #ccc; }
+  .bl-section-hdr {
+    height: 26px;
+    background: #2e2e2e;
+    border-bottom: 1px solid #1a1a1a;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    font-size: 10.5px;
+    color: #aaa;
+    font-family: -apple-system, sans-serif;
+    gap: 5px;
+  }
+  .bl-section-hdr::before {
+    content: '▸';
+    font-size: 9px;
+    color: #666;
+  }
+  .bl-prop-row {
+    height: 22px;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    justify-content: space-between;
+    border-bottom: 1px solid #1e1e1e;
+  }
+  .bl-prop-row span:first-child { font-size: 10px; color: #777; font-family: -apple-system, sans-serif; }
+  .bl-prop-row span:last-child { font-size: 10px; color: #9a9ea2; font-family: 'SF Mono', monospace; }
+  .bl-prop-slider {
+    height: 20px;
+    background: #333;
+    border-radius: 3px;
+    margin: 4px 8px;
+    position: relative;
+    overflow: hidden;
+  }
+  .bl-prop-slider-fill {
+    position: absolute; left: 0; top: 0; bottom: 0;
+    background: #4a4a7a;
+    border-radius: 3px;
+  }
+  .bl-prop-slider-val {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; color: #aaa; font-family: 'SF Mono', monospace;
+  }
+
+  /* Blender timeline at bottom */
+  #bl-timeline {
+    height: 100px;
+    background: #1f1f1f;
+    border-top: 1px solid #111;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+  }
+  #bl-tl-header {
+    height: 24px;
+    background: #252525;
+    border-bottom: 1px solid #111;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    gap: 8px;
+    font-size: 10px;
+    color: #777;
+    font-family: -apple-system, sans-serif;
+  }
+  #bl-tl-track {
+    flex: 1;
+    position: relative;
+    background: #1a1a1a;
+  }
+  .bl-tl-bar {
+    position: absolute;
+    height: 14px;
+    border-radius: 2px;
+    top: 8px;
+  }
+  .bl-tl-keyframe {
+    position: absolute;
+    width: 8px; height: 8px;
+    background: #d4803b;
+    transform: rotate(45deg);
+    top: 50%; margin-top: -4px;
+  }
+  /* Static playhead */
+  .bl-playhead {
+    position: absolute;
+    top: 0; bottom: 0;
+    width: 1px;
+    background: #5ca4e6;
+    left: 30%;
+  }
+  .bl-playhead::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -4px;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-top: 6px solid #5ca4e6;
+  }
+
+  /* ══════════════════════════════════════
+     VS CODE SCENE
+  ══════════════════════════════════════ */
+  #scene-vs {
+    background: #1e1e1e;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* VS activity bar */
+  #vs-activity {
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 46px;
+    background: #333333;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 8px;
+    gap: 4px;
+    z-index: 2;
+  }
+  .vs-act-btn {
+    width: 34px; height: 34px;
+    border-radius: 5px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .vs-act-btn img { width: 20px; height: 20px; }
+  .vs-act-btn.active {
+    border-left: 2px solid #fff;
+    background: transparent;
+  }
+
+  /* VS layout */
+  #vs-body {
+    position: absolute;
+    left: 46px; right: 0; top: 0; bottom: 26px;
+    display: flex;
+  }
+
+  /* VS Explorer sidebar */
+  #vs-explorer {
+    width: 180px;
+    background: #252526;
+    border-right: 1px solid #1e1e1e;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+  }
+  #vs-explorer-hdr {
+    height: 34px;
+    padding: 0 14px;
+    display: flex;
+    align-items: center;
+    font-size: 11px;
+    color: #bbb;
+    font-family: -apple-system, sans-serif;
+    letter-spacing: .8px;
+    text-transform: uppercase;
+    border-bottom: 1px solid #1e1e1e;
+  }
+  .vs-file-tree {
+    padding: 6px 0;
+  }
+  .vs-folder {
+    height: 24px;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    font-size: 11px;
+    color: #ccc;
+    font-family: -apple-system, sans-serif;
+    gap: 4px;
+  }
+  .vs-folder::before { content: '▾'; color: #888; font-size: 10px; }
+  .vs-file {
+    height: 22px;
+    display: flex;
+    align-items: center;
+    padding: 0 10px 0 26px;
+    font-size: 11px;
+    color: #9a9ea2;
+    font-family: -apple-system, sans-serif;
+    gap: 4px;
+  }
+  .vs-file.active { background: #37373d; color: #cdd0d4; }
+
+  /* VS Editor area */
+  #vs-editor {
+    flex: 1;
+    background: #1e1e1e;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  #vs-tab-bar {
+    height: 34px;
+    background: #2d2d2d;
+    border-bottom: 1px solid #252526;
+    display: flex;
+    align-items: flex-end;
+  }
+  .vs-tab {
+    height: 30px;
+    padding: 0 14px;
+    display: flex;
+    align-items: center;
+    font-size: 12px;
+    color: #8a8a8a;
+    font-family: -apple-system, sans-serif;
+    border-right: 1px solid #252526;
+    cursor: default;
+  }
+  .vs-tab.active {
+    background: #1e1e1e;
+    color: #cdd0d4;
+    border-top: 1px solid #007acc;
+  }
+  #vs-editor-inner {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    position: relative;
+  }
+  #vs-gutter {
+    width: 44px;
+    background: #1e1e1e;
+    padding: 8px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    padding-right: 10px;
+    border-right: 1px solid #252526;
+    flex-shrink: 0;
+  }
+  .vs-ln {
+    font-size: 11px;
+    color: #858585;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    line-height: 19px;
+    height: 19px;
+  }
+  .vs-ln.active-line { color: #c6c6c6; }
+  #vs-code {
+    flex: 1;
+    padding: 8px 0 8px 14px;
+    overflow: hidden;
+  }
+  .vs-code-line {
+    font-size: 12px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    line-height: 19px;
+    height: 19px;
+    white-space: pre;
+    color: #d4d4d4;
+  }
+  /* Syntax colors */
+  .kw  { color: #569cd6; }   /* keyword: import, const, function, return */
+  .kw2 { color: #c586c0; }   /* keyword2: from, export, if */
+  .fn  { color: #dcdcaa; }   /* function name */
+  .st  { color: #ce9178; }   /* string */
+  .cm  { color: #6a9955; }   /* comment */
+  .nu  { color: #b5cea8; }   /* number */
+  .ty  { color: #4ec9b0; }   /* type/class */
+  .op  { color: #d4d4d4; }   /* operator */
+  .va  { color: #9cdcfe; }   /* variable */
+
+  /* Cursor blink in editor */
+  #vs-caret {
+    display: inline-block;
+    width: 2px;
+    height: 14px;
+    background: #aeafad;
+    vertical-align: middle;
+    margin-left: 1px;
+  }
+
+  /* VS status bar */
+  #vs-status {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 26px;
+    background: #007acc;
+    display: flex;
+    align-items: center;
+    padding: 0 14px;
+    gap: 14px;
+    font-size: 11px;
+    color: rgba(255,255,255,.9);
+    font-family: -apple-system, sans-serif;
+  }
+  .vs-status-r { margin-left: auto; display: flex; gap: 14px; }
+
+  /* ══════════════════════════════════════
+     NEXT BUTTON
+  ══════════════════════════════════════ */
+  #next-btn {
+    position: absolute;
+    bottom: 14px;
+    right: 14px;
+    width: 32px; height: 32px;
+    background: rgba(255,255,255,.1);
+    border: 1px solid rgba(255,255,255,.2);
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    z-index: 40;
+    transition: background .2s;
+  }
+  #next-btn:hover { background: rgba(255,255,255,.18); }
+  #next-btn svg { width: 14px; height: 14px; }
+
+  /* Scene dots */
+  #scene-dots {
+    position: absolute;
+    bottom: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 7px;
+    z-index: 40;
+  }
+  .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.25);
+    transition: background .3s;
+  }
+  .dot.active { background: rgba(255,255,255,.8); }
+</style>
+</head>
+<body>
+
+<div id="app-window">
+
+  <!-- ── Static chrome: never animates ── -->
+  <div id="win-chrome">
+    <div class="tl tl-red"></div>
+    <div class="tl tl-yellow"></div>
+    <div class="tl tl-green"></div>
+    <span class="chrome-title" id="chrome-title">Untitled-1.psd</span>
+  </div>
+
+  <!-- ── Cursor ── -->
+  <img id="cursor-el" src="icons/Photoshop/Artboard 3 copy 37.svg" alt="">
+
+  <!-- ── Scene wrapper ── -->
+  <div id="scene-wrap">
+
+    <!-- ════ PS ════ -->
+    <div class="scene active" id="scene-ps" data-title="Untitled-1.psd">
+      <div id="ps-toolbar">
+        <div class="ps-tool active">
+          <img src="icons/Photoshop/Artboard 3 copy 40.svg" class="ico-bright" alt="">
+        </div>
+        <div class="ps-tool">
+          <img src="icons/Photoshop/Artboard 3 copy 36.svg" class="ico-dark" alt="">
+        </div>
+        <div class="ps-tool">
+          <img src="icons/Photoshop/Artboard 3 copy 37.svg" class="ico-dark" alt="">
+        </div>
+        <div class="ps-tool">
+          <img src="icons/Photoshop/Artboard 3 copy 38.svg" class="ico-dark" alt="">
+        </div>
+        <div class="ps-tool">
+          <img src="icons/Photoshop/Artboard 3 copy 39.svg" class="ico-dark" alt="">
+        </div>
+        <div class="ps-tool">
+          <img src="icons/Photoshop/Artboard 3 copy 41.svg" class="ico-dark" alt="">
+        </div>
+        <div class="ps-tool">
+          <img src="icons/Photoshop/Artboard 3 copy 42.svg" class="ico-dark" alt="">
+        </div>
+        <div class="ps-tool">
+          <img src="icons/Photoshop/Artboard 3 copy 43.svg" class="ico-dark" alt="">
+        </div>
+      </div>
+
+      <div id="ps-canvas">
+        <div id="ps-canvas-inner">
+          <div class="ps-circle"></div>
+          <div class="ps-rect"></div>
+          <!-- selection handles -->
+          <div class="sel-handle" style="top:24px;left:24px;"></div>
+          <div class="sel-handle" style="top:24px;right:24px;"></div>
+          <div class="sel-handle" style="bottom:24px;left:24px;"></div>
+          <div class="sel-handle" style="bottom:24px;right:24px;"></div>
+          <div class="sel-handle" style="top:24px;left:50%;margin-left:-3px;"></div>
+          <div class="sel-handle" style="bottom:24px;left:50%;margin-left:-3px;"></div>
+          <div class="sel-handle" style="top:50%;margin-top:-3px;left:24px;"></div>
+          <div class="sel-handle" style="top:50%;margin-top:-3px;right:24px;"></div>
+        </div>
+      </div>
+
+      <div id="ps-right">
+        <div class="ps-panel-header">Layers</div>
+        <div class="ps-panel-body">
+          <div class="ps-layer sel">
+            <div class="ps-layer-thumb" style="background:#efd07b;"></div>
+            <span>Circle</span>
+          </div>
+          <div class="ps-layer">
+            <div class="ps-layer-thumb" style="background:#775487;"></div>
+            <span>Rect</span>
+          </div>
+          <div class="ps-layer">
+            <div class="ps-layer-thumb" style="background:#f5f2ef;"></div>
+            <span>Background</span>
+          </div>
+        </div>
+        <div class="ps-panel-header" style="margin-top:auto;">Color</div>
+        <div class="ps-panel-body">
+          <div class="ps-color-block">
+            <div style="background:#efd07b;"></div>
+            <div style="background:#775487;"></div>
+            <div style="background:#f5f2ef;"></div>
+          </div>
+          <div class="ps-swatch-row">
+            <div class="ps-swatch" style="background:#f46e5a;"></div>
+            <div class="ps-swatch" style="background:#efd07b;"></div>
+            <div class="ps-swatch" style="background:#6eb360;"></div>
+            <div class="ps-swatch" style="background:#775487;"></div>
+            <div class="ps-swatch" style="background:#5f90e3;"></div>
+            <div class="ps-swatch" style="background:#f5f2ef;"></div>
+          </div>
+        </div>
+      </div>
+    </div><!-- /scene-ps -->
+
+    <!-- ════ AE ════ -->
+    <div class="scene" id="scene-ae" data-title="Composition.aep">
+      <div id="ae-top">
+        <div id="ae-left">
+          <div class="ae-panel-tab">
+            <span class="ae-tab-active">Project</span>
+            <span>Libraries</span>
+          </div>
+          <div class="ae-project-item sel">
+            <div class="ae-project-icon" style="background:#5f90e3;border-radius:50%;"></div>
+            Composition 1
+          </div>
+          <div class="ae-project-item">
+            <div class="ae-project-icon" style="background:#efd07b;border-radius:50%;"></div>
+            Circle Layer
+          </div>
+          <div class="ae-project-item">
+            <div class="ae-project-icon" style="background:#775487;border-radius:3px;"></div>
+            Rect Layer
+          </div>
+          <div class="ae-project-item">
+            <div class="ae-project-icon" style="background:#f5f2ef;border-radius:2px;"></div>
+            Background
+          </div>
+          <div style="height:1px;background:#222;margin:8px 0;"></div>
+          <div class="ae-effect-row">Position: 960.0, 540.0</div>
+          <div class="ae-effect-row">Scale: 100%</div>
+          <div class="ae-effect-row">Rotation: 0°</div>
+          <div class="ae-effect-row">Opacity: 100%</div>
+        </div>
+
+        <div id="ae-center">
+          <div id="ae-preview">
+            <div id="ae-canvas-inner">
+              <div class="ae-circle"></div>
+              <div class="ae-rect"></div>
+            </div>
+          </div>
+          <div id="ae-controls">
+            <div class="ae-ctrl-btn"><div></div></div>
+            <div class="ae-ctrl-btn" style="background:#5f90e3;"><div></div></div>
+            <div class="ae-ctrl-btn"><div style="border-left-color:#fff;"></div></div>
+            <span class="ae-timecode">0:00:01:12</span>
+          </div>
+        </div>
+
+        <div id="ae-right">
+          <div class="ae-effect-hdr">Effects</div>
+          <div class="ae-prop-row"><span>Blur</span><span>0.0</span></div>
+          <div class="ae-prop-row"><span>Opacity</span><span>100%</span></div>
+          <div class="ae-prop-row"><span>Scale</span><span>1.0</span></div>
+          <div class="ae-prop-row"><span>Rotate</span><span>0°</span></div>
+          <div class="ae-prop-row"><span>Tint</span><span>—</span></div>
+          <div class="ae-prop-row"><span>Shadow</span><span>off</span></div>
+        </div>
+      </div>
+
+      <div id="ae-timeline">
+        <div id="ae-tl-header">
+          <div class="ae-tl-btn"></div>
+          <div class="ae-tl-btn"></div>
+          <div class="ae-tl-timescale">
+            <div class="ae-tl-tick">0s</div>
+            <div class="ae-tl-tick">1s</div>
+            <div class="ae-tl-tick">2s</div>
+            <div class="ae-tl-tick">3s</div>
+            <div class="ae-tl-tick">4s</div>
+            <div class="ae-tl-tick">5s</div>
+          </div>
+        </div>
+        <div id="ae-tl-body">
+          <div id="ae-tl-labels">
+            <div class="ae-layer-label">
+              <div class="dot" style="background:#efd07b;"></div>
+              <span>Circle Layer</span>
+            </div>
+            <div class="ae-layer-label">
+              <div class="dot" style="background:#775487;"></div>
+              <span>Rect Layer</span>
+            </div>
+            <div class="ae-layer-label">
+              <div class="dot" style="background:#7269c7;"></div>
+              <span>BG Solid</span>
+            </div>
+            <div class="ae-layer-label">
+              <div class="dot" style="background:#523d95;"></div>
+              <span>Adjustment</span>
+            </div>
+            <div class="ae-layer-label">
+              <div class="dot" style="background:#474696;"></div>
+              <span>Camera 1</span>
+            </div>
+          </div>
+          <div id="ae-tl-tracks">
+            <div class="ae-playhead"></div>
+            <!-- Track 1 -->
+            <div class="ae-track">
+              <div class="ae-clip" style="background:#474696;left:4px;width:75%;"></div>
+              <div class="ae-diamond" style="left:25%;"></div>
+              <div class="ae-diamond" style="left:60%;background:#efd07b;"></div>
+            </div>
+            <!-- Track 2 -->
+            <div class="ae-track">
+              <div class="ae-clip" style="background:#523d95;left:8px;width:60%;"></div>
+              <div class="ae-diamond" style="left:20%;"></div>
+            </div>
+            <!-- Track 3 -->
+            <div class="ae-track">
+              <div class="ae-clip" style="background:#7269c7;left:0;width:90%;"></div>
+            </div>
+            <!-- Track 4 -->
+            <div class="ae-track">
+              <div class="ae-clip" style="background:#895dbf;left:4px;width:50%;"></div>
+              <div class="ae-diamond" style="left:40%;background:#f46e5a;"></div>
+            </div>
+            <!-- Track 5 -->
+            <div class="ae-track">
+              <div class="ae-clip" style="background:#474696;left:0;width:100%;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div><!-- /scene-ae -->
+
+    <!-- ════ BLENDER ════ -->
+    <div class="scene" id="scene-bl" data-title="scene.blend">
+      <div id="bl-menubar">
+        <span class="bl-menu-item">File</span>
+        <span class="bl-menu-item">Edit</span>
+        <span class="bl-menu-item">Render</span>
+        <span class="bl-menu-item">Window</span>
+        <span class="bl-menu-item">Help</span>
+      </div>
+      <div id="bl-main">
+        <div id="bl-tools">
+          <div class="bl-tool active">
+            <img src="icons/Blender/Artboard 3 copy 10.svg" class="ico-bright" alt="">
+          </div>
+          <div class="bl-tool">
+            <img src="icons/Blender/Artboard 3 copy 11.svg" class="ico-orange" alt="">
+          </div>
+          <div class="bl-tool">
+            <img src="icons/Blender/Artboard 3 copy 12.svg" class="ico-dark" alt="">
+          </div>
+          <div class="bl-tool">
+            <img src="icons/Blender/Artboard 3 copy 13.svg" class="ico-dark" alt="">
+          </div>
+          <div class="bl-tool">
+            <img src="icons/Blender/Artboard 3 copy 14.svg" class="ico-dark" alt="">
+          </div>
+          <div class="bl-tool">
+            <img src="icons/Blender/Artboard 3 copy 15.svg" class="ico-dark" alt="">
+          </div>
+          <div class="bl-tool">
+            <img src="icons/Blender/Artboard 3 copy 16.svg" class="ico-dim" alt="">
+          </div>
+        </div>
+
+        <div id="bl-viewport">
+          <div id="bl-grid"></div>
+          <div id="bl-viewport-inner">
+            <div id="bl-cube-wrap">
+              <div id="bl-cube">
+                <div class="bl-face front"></div>
+                <div class="bl-face back"></div>
+                <div class="bl-face right"></div>
+                <div class="bl-face left"></div>
+                <div class="bl-face top"></div>
+                <div class="bl-face bottom"></div>
+              </div>
+            </div>
+          </div>
+          <div class="bl-viewport-label">Perspective  |  Solid</div>
+          <div class="bl-viewport-nav">
+            <div class="bl-nav-btn">
+              <svg width="10" height="10" viewBox="0 0 10 10"><circle cx="5" cy="5" r="3.5" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="1.5"/><line x1="5" y1="1.5" x2="5" y2="8.5" stroke="rgba(255,255,255,.5)" stroke-width="1"/><line x1="1.5" y1="5" x2="8.5" y2="5" stroke="rgba(255,255,255,.5)" stroke-width="1"/></svg>
+            </div>
+            <div class="bl-nav-btn">
+              <svg width="10" height="10" viewBox="0 0 10 10"><text x="2" y="8" font-size="8" fill="rgba(255,255,255,.5)">+</text></svg>
+            </div>
+            <div class="bl-nav-btn">
+              <svg width="10" height="10" viewBox="0 0 10 10"><text x="3" y="8" font-size="8" fill="rgba(255,255,255,.5)">−</text></svg>
+            </div>
+          </div>
+        </div>
+
+        <div id="bl-right">
+          <div class="bl-panel-tab-row">
+            <div class="bl-panel-tab active">Scene</div>
+            <div class="bl-panel-tab">Object</div>
+            <div class="bl-panel-tab">Mat.</div>
+          </div>
+          <div class="bl-section-hdr">Transform</div>
+          <div class="bl-prop-row"><span>Location X</span><span>0.000</span></div>
+          <div class="bl-prop-row"><span>Location Y</span><span>0.000</span></div>
+          <div class="bl-prop-row"><span>Location Z</span><span>0.000</span></div>
+          <div class="bl-prop-slider"><div class="bl-prop-slider-fill" style="width:50%;"></div><div class="bl-prop-slider-val">0.000</div></div>
+          <div class="bl-section-hdr">Rotation</div>
+          <div class="bl-prop-row"><span>X</span><span>0°</span></div>
+          <div class="bl-prop-row"><span>Y</span><span>0°</span></div>
+          <div class="bl-prop-row"><span>Z</span><span>0°</span></div>
+          <div class="bl-section-hdr">Scale</div>
+          <div class="bl-prop-row"><span>X</span><span>1.000</span></div>
+          <div class="bl-prop-row"><span>Y</span><span>1.000</span></div>
+          <div class="bl-prop-row"><span>Z</span><span>1.000</span></div>
+          <div class="bl-prop-slider"><div class="bl-prop-slider-fill" style="width:100%;"></div><div class="bl-prop-slider-val">1.000</div></div>
+        </div>
+      </div>
+
+      <div id="bl-timeline">
+        <div id="bl-tl-header">
+          <span>▶</span>
+          <span style="margin-left:6px;">Frame: 24</span>
+          <span style="margin-left:auto;color:#d4803b;">Start: 1</span>
+          <span style="margin-left:10px;color:#d4803b;">End: 250</span>
+        </div>
+        <div id="bl-tl-track">
+          <div class="bl-playhead"></div>
+          <div class="bl-tl-bar" style="background:#d4803b;left:4px;width:45%;opacity:.5;top:18px;height:10px;"></div>
+          <div class="bl-tl-bar" style="background:#4a4a7a;left:8px;width:70%;opacity:.4;top:32px;height:10px;"></div>
+          <div class="bl-tl-keyframe" style="left:20%;"></div>
+          <div class="bl-tl-keyframe" style="left:45%;background:#5ca4e6;"></div>
+          <div class="bl-tl-keyframe" style="left:70%;"></div>
+        </div>
+      </div>
+    </div><!-- /scene-bl -->
+
+    <!-- ════ VS CODE ════ -->
+    <div class="scene" id="scene-vs" data-title="main.ts — MyProject">
+      <div id="vs-activity">
+        <div class="vs-act-btn active">
+          <img src="icons/VS/Artboard 3 copy 4.svg" class="ico-bright" alt="">
+        </div>
+        <div class="vs-act-btn">
+          <img src="icons/VS/Artboard 3 copy 5.svg" class="ico-dim" alt="">
+        </div>
+        <div class="vs-act-btn">
+          <img src="icons/VS/Artboard 3 copy 6.svg" class="ico-dim" alt="">
+        </div>
+        <div class="vs-act-btn">
+          <img src="icons/VS/Artboard 3 copy 7.svg" class="ico-dim" alt="">
+        </div>
+        <div class="vs-act-btn" style="margin-top:auto;margin-bottom:8px;">
+          <img src="icons/VS/Artboard 2.svg" class="ico-dim" alt="">
+        </div>
+      </div>
+
+      <div id="vs-body">
+        <div id="vs-explorer">
+          <div id="vs-explorer-hdr">Explorer</div>
+          <div class="vs-file-tree">
+            <div class="vs-folder">src</div>
+            <div class="vs-file active">main.ts</div>
+            <div class="vs-file">utils.ts</div>
+            <div class="vs-file">types.ts</div>
+            <div class="vs-file">index.css</div>
+            <div class="vs-folder">components</div>
+            <div class="vs-file">Button.tsx</div>
+            <div class="vs-file">Modal.tsx</div>
+            <div class="vs-folder">public</div>
+            <div class="vs-file">index.html</div>
+          </div>
+        </div>
+
+        <div id="vs-editor">
+          <div id="vs-tab-bar">
+            <div class="vs-tab active">main.ts</div>
+            <div class="vs-tab">utils.ts</div>
+            <div class="vs-tab">Button.tsx</div>
+          </div>
+          <div id="vs-editor-inner">
+            <div id="vs-gutter">
+              <div class="vs-ln">1</div>
+              <div class="vs-ln">2</div>
+              <div class="vs-ln">3</div>
+              <div class="vs-ln">4</div>
+              <div class="vs-ln">5</div>
+              <div class="vs-ln">6</div>
+              <div class="vs-ln">7</div>
+              <div class="vs-ln">8</div>
+              <div class="vs-ln">9</div>
+              <div class="vs-ln active-line">10</div>
+              <div class="vs-ln">11</div>
+              <div class="vs-ln">12</div>
+              <div class="vs-ln">13</div>
+              <div class="vs-ln">14</div>
+              <div class="vs-ln">15</div>
+              <div class="vs-ln">16</div>
+              <div class="vs-ln">17</div>
+              <div class="vs-ln">18</div>
+              <div class="vs-ln">19</div>
+              <div class="vs-ln">20</div>
+              <div class="vs-ln">21</div>
+              <div class="vs-ln">22</div>
+              <div class="vs-ln">23</div>
+              <div class="vs-ln">24</div>
+              <div class="vs-ln">25</div>
+              <div class="vs-ln">26</div>
+              <div class="vs-ln">27</div>
+              <div class="vs-ln">28</div>
+              <div class="vs-ln">29</div>
+              <div class="vs-ln">30</div>
+            </div>
+            <div id="vs-code">
+              <div class="vs-code-line"><span class="kw">import</span> <span class="va">gsap</span> <span class="kw2">from</span> <span class="st">'gsap'</span></div>
+              <div class="vs-code-line"><span class="kw">import</span> { <span class="va">useState</span>, <span class="va">useEffect</span> } <span class="kw2">from</span> <span class="st">'react'</span></div>
+              <div class="vs-code-line"><span class="kw">import</span> { <span class="ty">Scene</span>, <span class="ty">Transition</span> } <span class="kw2">from</span> <span class="st">'./types'</span></div>
+              <div class="vs-code-line">&nbsp;</div>
+              <div class="vs-code-line"><span class="kw2">export</span> <span class="kw">const</span> <span class="va">scenes</span>: <span class="ty">Scene</span>[] = [<span class="st">'ps'</span>, <span class="st">'ae'</span>, <span class="st">'bl'</span>, <span class="st">'vs'</span>]</div>
+              <div class="vs-code-line">&nbsp;</div>
+              <div class="vs-code-line"><span class="cm">// Animate transition between UI panels</span></div>
+              <div class="vs-code-line"><span class="kw2">export</span> <span class="kw">function</span> <span class="fn">transition</span>(<span class="va">from</span>: <span class="ty">Scene</span>, <span class="va">to</span>: <span class="ty">Scene</span>) {</div>
+              <div class="vs-code-line">  <span class="kw">const</span> <span class="va">tl</span> = <span class="fn">gsap</span>.<span class="fn">timeline</span>()</div>
+              <div class="vs-code-line">  <span class="va">tl</span>.<span class="fn">to</span>(<span class="va">from</span>, { <span class="va">opacity</span>: <span class="nu">0</span>, <span class="va">y</span>: <span class="nu">-12</span>, <span class="va">duration</span>: <span class="nu">.4</span> })<span id="vs-caret"></span></div>
+              <div class="vs-code-line">    .<span class="fn">from</span>(<span class="va">to</span>, { <span class="va">opacity</span>: <span class="nu">0</span>, <span class="va">y</span>: <span class="nu">12</span>, <span class="va">duration</span>: <span class="nu">.4</span> })</div>
+              <div class="vs-code-line">  <span class="kw">return</span> <span class="va">tl</span></div>
+              <div class="vs-code-line">}</div>
+              <div class="vs-code-line">&nbsp;</div>
+              <div class="vs-code-line"><span class="kw">function</span> <span class="fn">moveCursor</span>(<span class="va">x</span>: <span class="ty">number</span>, <span class="va">y</span>: <span class="ty">number</span>) {</div>
+              <div class="vs-code-line">  <span class="kw">return</span> <span class="fn">gsap</span>.<span class="fn">to</span>(<span class="st">'#cursor'</span>, {</div>
+              <div class="vs-code-line">    <span class="va">left</span>: <span class="va">x</span>, <span class="va">top</span>: <span class="va">y</span>,</div>
+              <div class="vs-code-line">    <span class="va">duration</span>: <span class="nu">.6</span>, <span class="va">ease</span>: <span class="st">'power2.out'</span></div>
+              <div class="vs-code-line">  })</div>
+              <div class="vs-code-line">}</div>
+              <div class="vs-code-line">&nbsp;</div>
+              <div class="vs-code-line"><span class="kw">const</span> <span class="fn">App</span> = () =&gt; {</div>
+              <div class="vs-code-line">  <span class="kw">const</span> [<span class="va">idx</span>, <span class="fn">setIdx</span>] = <span class="fn">useState</span>(<span class="nu">0</span>)</div>
+              <div class="vs-code-line">  <span class="fn">useEffect</span>(() =&gt; {</div>
+              <div class="vs-code-line">    <span class="fn">transition</span>(<span class="va">scenes</span>[<span class="va">idx</span>], <span class="va">scenes</span>[<span class="va">idx</span> + <span class="nu">1</span>])</div>
+              <div class="vs-code-line">  }, [<span class="va">idx</span>])</div>
+              <div class="vs-code-line">  <span class="kw">return</span> <span class="op">&lt;</span><span class="ty">div</span><span class="op">&gt;</span>{<span class="va">idx</span>}<span class="op">&lt;/</span><span class="ty">div</span><span class="op">&gt;</span></div>
+              <div class="vs-code-line">}</div>
+              <div class="vs-code-line">&nbsp;</div>
+              <div class="vs-code-line"><span class="kw2">export</span> <span class="kw">default</span> <span class="fn">App</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="vs-status">
+        <span>main</span>
+        <span style="color:rgba(255,255,255,.6);">⎇</span>
+        <span>TypeScript 5.3</span>
+        <div class="vs-status-r">
+          <span>Ln 10, Col 48</span>
+          <span>UTF-8</span>
+          <span>Prettier</span>
+        </div>
+      </div>
+    </div><!-- /scene-vs -->
+
+  </div><!-- /scene-wrap -->
+
+  <!-- Navigation dots -->
+  <div id="scene-dots">
+    <div class="dot active"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+  </div>
+
+  <!-- Next button -->
+  <button id="next-btn" aria-label="Next scene">
+    <svg viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="rgba(255,255,255,.7)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </button>
+
+</div><!-- /app-window -->
+
+<script>
+// ─── Scene config ──────────────────────────────────────────────────────────────
+const SCENES = ['scene-ps', 'scene-ae', 'scene-bl', 'scene-vs'];
+const TITLES = ['Untitled-1.psd', 'Composition.aep', 'scene.blend', 'main.ts — MyProject'];
+
+// Cursor rest positions per scene [left%, top%] as fraction of window
+const CURSOR_REST = [
+  [0.55, 0.52],   // PS: over canvas
+  [0.52, 0.35],   // AE: over preview
+  [0.48, 0.45],   // Blender: over viewport
+  [0.72, 0.42],   // VS Code: over editor
+];
+
+let currentIdx = 0;
+let isAnimating = false;
+
+const win     = document.getElementById('app-window');
+const cursor  = document.getElementById('cursor-el');
+const dots    = document.querySelectorAll('.dot');
+const title   = document.getElementById('chrome-title');
+
+// ─── Scale window to fit viewport ────────────────────────────────────────────
+function scaleWindow() {
+  const W = 580, H = 678;
+  const vw = window.innerWidth, vh = window.innerHeight;
+  const scale = Math.min((vw * 0.9) / W, (vh * 0.9) / H, 1.2);
+  win.style.transform = `scale(${scale})`;
+  win.style.marginTop  = `${(H * scale - H) / 2}px`;
+  win.style.marginLeft = `${(W * scale - W) / 2}px`;
+}
+scaleWindow();
+window.addEventListener('resize', scaleWindow);
+
+// ─── Place cursor at rest position ───────────────────────────────────────────
+function cursorPos(idx) {
+  const [lf, tf] = CURSOR_REST[idx];
+  return { left: 580 * lf, top: 678 * tf };
+}
+
+// Initialise cursor at PS rest
+gsap.set(cursor, { ...cursorPos(0), scale: 1 });
+
+// ─── Transition ──────────────────────────────────────────────────────────────
+function go(nextIdx) {
+  if (isAnimating) return;
+  isAnimating = true;
+
+  const fromEl = document.getElementById(SCENES[currentIdx]);
+  const toEl   = document.getElementById(SCENES[nextIdx]);
+  const toPos  = cursorPos(nextIdx);
+
+  // Click target: always in the chrome area near the centre
+  const clickTarget = { left: 290 + (nextIdx % 2 ? 30 : -30), top: 20 };
+
+  const tl = gsap.timeline({
+    onComplete: () => {
+      currentIdx = nextIdx;
+      isAnimating = false;
+      dots.forEach((d, i) => d.classList.toggle('active', i === nextIdx));
+    }
+  });
+
+  // 1. Cursor moves to click spot in title bar
+  tl.to(cursor, {
+    left: clickTarget.left,
+    top: clickTarget.top,
+    duration: 0.55,
+    ease: 'power2.inOut'
+  });
+
+  // 2. Click gesture: quick scale pulse
+  tl.to(cursor, { scale: 0.72, duration: 0.08, ease: 'power3.in' }, '>')
+    .to(cursor, { scale: 1,    duration: 0.12, ease: 'power2.out' }, '>');
+
+  // 3. Outgoing scene fades + slides up
+  tl.to(fromEl, {
+    opacity: 0,
+    y: -18,
+    duration: 0.38,
+    ease: 'power2.in',
+  }, '-=0.05');
+
+  // Update title mid-transition
+  tl.call(() => { title.textContent = TITLES[nextIdx]; });
+
+  // 4. Incoming scene fades + slides in from below
+  tl.fromTo(toEl,
+    { opacity: 0, y: 18 },
+    { opacity: 1, y: 0, duration: 0.42, ease: 'power2.out',
+      onStart: () => {
+        toEl.style.pointerEvents = 'auto';
+        fromEl.style.pointerEvents = 'none';
+        fromEl.classList.remove('active');
+        toEl.classList.add('active');
+      }
+    },
+    '-=0.1'
+  );
+
+  // 5. Cursor drifts to rest position in new scene
+  tl.to(cursor, {
+    left: toPos.left,
+    top: toPos.top,
+    duration: 0.6,
+    ease: 'power1.out'
+  }, '-=0.2');
+}
+
+// ─── Button / auto-advance ───────────────────────────────────────────────────
+document.getElementById('next-btn').addEventListener('click', () => {
+  const next = (currentIdx + 1) % SCENES.length;
+  go(next);
+});
+
+// Auto-advance every 4.5 s
+let autoTimer = setInterval(() => {
+  const next = (currentIdx + 1) % SCENES.length;
+  go(next);
+}, 4500);
+
+document.getElementById('next-btn').addEventListener('click', () => {
+  clearInterval(autoTimer);
+  autoTimer = setInterval(() => {
+    const next = (currentIdx + 1) % SCENES.length;
+    go(next);
+  }, 4500);
+});
+</script>
+</body>
+</html>

@@ -30,12 +30,14 @@
 
     let activeSlug = null;
     let armedSlug = null;
+    const defaultPreviewSlug = "wrapchat";
 
     function usesTwoTapProjectLinks() {
       return touchPreviewQuery.matches || window.innerWidth <= 760;
     }
 
-    function renderPreview(project) {
+    function renderPreview(project, options) {
+      const settings = Object.assign({ useProjectAccent: true }, options || {});
       const isEmpty = !project;
       panel.classList.toggle("is-empty", isEmpty);
       hero.classList.toggle("is-previewing", !isEmpty);
@@ -70,9 +72,15 @@
         tags.appendChild(createTag(label));
       });
 
-      app.setIdleCursor(false);
-      app.setAccent(project.accentRgb);
+      app.setIdleCursor(!settings.useProjectAccent);
+      app.setAccent(settings.useProjectAccent ? project.accentRgb : app.getDefaultAccent());
       app.setContext(project.context);
+    }
+
+    function renderDefaultPreview() {
+      renderPreview(store.projectBySlug[defaultPreviewSlug] || homeProjects[0] || null, {
+        useProjectAccent: false
+      });
     }
 
     function setActive(slug) {
@@ -147,30 +155,28 @@
       global.OKSTheme.onChange(function syncIdleAccent() {
         if (activeSlug) {
           renderPreview(store.projectBySlug[activeSlug]);
+          return;
         }
+
+        renderDefaultPreview();
       });
     }
 
     document.addEventListener("oks:project-data-change", function syncPreviewFromAccentLab() {
-      const project = activeSlug ? store.projectBySlug[activeSlug] : null;
-      renderPreview(project);
-    });
-
-    document.addEventListener("oks:accent-lab-open", function keepSelectedProjectVisible() {
       if (activeSlug) {
         renderPreview(store.projectBySlug[activeSlug]);
         return;
       }
 
-      if (homeProjects[0]) {
-        setActive(homeProjects[0].slug);
+      renderDefaultPreview();
+    });
+
+    document.addEventListener("oks:accent-lab-open", function keepSelectedProjectVisible() {
+      if (activeSlug) {
+        renderPreview(store.projectBySlug[activeSlug]);
       }
     });
 
-    if (homeProjects[0]) {
-      setActive(homeProjects[0].slug);
-    } else {
-      renderPreview(null);
-    }
+    renderDefaultPreview();
   });
 })(window);

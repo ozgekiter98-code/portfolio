@@ -21,6 +21,7 @@
     <script defer src="./js/background.js"></script>
     <script defer src="./js/site.js"></script>
     <script defer src="./js/home.js"></script>
+    <script defer src="./js/home-animation.js"></script>
   </head>
   <body data-page="home" data-context="Digital">
     <canvas id="bgCanvas" class="bg-canvas" aria-hidden="true"></canvas>
@@ -72,63 +73,22 @@
       <section class="home-intro" aria-label="Studio introduction">
         <div class="home-intro-copy">
           <p class="eyebrow">Product design · Visual systems · Creative technology</p>
-          <h1 class="hero-title">I turn unclear ideas into structured visual and digital outcomes.</h1>
+          <h1 class="hero-title">I make work that you can take personal.</h1>
           <p class="hero-summary">
-            A portfolio built around systems thinking, concept-driven visuals, and the ability to
-            move from research to interface, identity, content, and implementation.
+            Most of the work happens before it looks like design. I work across identity, product
+            design, and digital execution, from early direction through to the final output.
           </p>
         </div>
 
-        <figure class="home-intro-visual">
-          <img src="../assets/shared/PS.svg" alt="OKS Studio portfolio system artwork" />
+        <figure class="home-intro-visual home-intro-animation">
+          <iframe
+            class="home-intro-animation-frame"
+            src="../export/AbstractUI-v3.html"
+            title="Animated creative tools preview"
+            loading="eager"
+            allowtransparency="true"
+          ></iframe>
         </figure>
-      </section>
-
-      <section class="home-narrative" aria-label="Practice overview">
-        <div class="section-headline">
-          <p class="eyebrow">Practice</p>
-          <h2 class="section-title section-title--compact">
-            Work organized by thinking, not by file type.
-          </h2>
-        </div>
-
-        <div class="statement-grid">
-          <article class="statement-card">
-            <span class="statement-num">01</span>
-            <h3>Product Thinking</h3>
-            <p>
-              Designing flows, decisions, screens, states, and interaction logic instead of only
-              static visuals.
-            </p>
-          </article>
-          <article class="statement-card">
-            <span class="statement-num">02</span>
-            <h3>Visual Direction</h3>
-            <p>
-              Building identities, campaigns, and image systems with a clear conceptual thread.
-            </p>
-          </article>
-          <article class="statement-card">
-            <span class="statement-num">03</span>
-            <h3>Execution Layer</h3>
-            <p>
-              Creating usable frontend prototypes and production-ready design assets that can
-              actually ship.
-            </p>
-          </article>
-        </div>
-      </section>
-
-      <section class="method-band" aria-label="Working method">
-        <div class="method-copy">
-          <p class="eyebrow">Approach</p>
-          <h2>Every project should reveal how I think, not only what I made.</h2>
-        </div>
-        <div class="method-list">
-          <p><span>01</span> Clarify the unclear problem.</p>
-          <p><span>02</span> Build the visual or interaction system.</p>
-          <p><span>03</span> Make it tangible through screens, identity, content, or code.</p>
-        </div>
       </section>
 
       <section class="home-projects" aria-label="Selected work">
@@ -167,6 +127,45 @@
             </div>
           </a>
         </section>
+      </section>
+
+      <section class="home-narrative" aria-label="How I work">
+        <div class="section-headline">
+          <p class="eyebrow">How I work</p>
+          <h2 class="section-title">
+            Most projects start with a version I know isn't the right one.
+          </h2>
+        </div>
+
+        <div class="statement-grid">
+          <article class="statement-card">
+            <span class="statement-num">01</span>
+            <h3>The obvious version comes first</h3>
+            <p>
+              There's always a direction that would be easy to approve. I tend to make it first,
+              not to avoid it, but because I can't see past it until it exists. That's usually
+              when I figure out what I'm actually trying to do.
+            </p>
+          </article>
+          <article class="statement-card">
+            <span class="statement-num">02</span>
+            <h3>If I'm still explaining it, it hasn't worked yet</h3>
+            <p>
+              I get uncomfortable when a concept needs a lot of unpacking. If the idea isn't
+              present in the structure and behavior of the work itself, something has gone wrong.
+              I don't always know that early, but I feel it.
+            </p>
+          </article>
+          <article class="statement-card">
+            <span class="statement-num">03</span>
+            <h3>It becomes mine when I stop checking</h3>
+            <p>
+              At some point in most projects I notice I've stopped looking at references.
+              Not intentionally. I just realize I haven't checked what others are doing in a
+              while. That's usually when the work starts to feel like it's going somewhere.
+            </p>
+          </article>
+        </div>
       </section>
     </main>
   </body>

@@ -466,6 +466,72 @@
     });
   }
 
+  function renderProjectNote(text) {
+    return '<p class="project-note">' + text + "</p>";
+  }
+
+  function renderProjectContext(project) {
+    if (!project.situation && !project.challenge) {
+      return "";
+    }
+    return (
+      '<section class="project-content-section project-context" aria-label="Project context">' +
+      (project.situation
+        ? '<div class="project-context-situation">' +
+          '  <p class="eyebrow">Situation</p>' +
+          '  <p class="project-section-copy">' + project.situation + "</p>" +
+          "</div>"
+        : "<div></div>") +
+      (project.challenge
+        ? '<div class="project-context-question">' +
+          '  <p class="eyebrow">The real question</p>' +
+          '  <p class="project-context-question-text">' + project.challenge + "</p>" +
+          "</div>"
+        : "") +
+      "</section>"
+    );
+  }
+
+  function renderProjectDecisions(project) {
+    if (!project.decisions || !project.decisions.length) {
+      return "";
+    }
+    return (
+      '<section class="project-content-section" aria-label="Key decisions">' +
+      '  <div class="project-section-head">' +
+      '    <p class="eyebrow">Key decisions</p>' +
+      "  </div>" +
+      '  <div class="project-decisions-list">' +
+      project.decisions
+        .map(function renderDecision(decision, index) {
+          return (
+            '<div class="project-decision">' +
+            '  <span class="project-decision-num">0' + (index + 1) + "</span>" +
+            '  <div class="project-decision-body">' +
+            "    <strong>" + decision.heading + "</strong>" +
+            "    <p>" + decision.body + "</p>" +
+            "  </div>" +
+            "</div>"
+          );
+        })
+        .join("") +
+      "  </div>" +
+      "</section>"
+    );
+  }
+
+  function renderProjectLesson(project) {
+    if (!project.lesson) {
+      return "";
+    }
+    return (
+      '<section class="project-lesson" aria-label="What I\'ve learned from this">' +
+      '  <p class="eyebrow">What I\'ve learned from this</p>' +
+      '  <p class="project-lesson-copy">' + project.lesson + "</p>" +
+      "</section>"
+    );
+  }
+
   function renderProjectGallery(project) {
     const galleryItems = getProjectGallery(project);
     const galleryModifierClass = project.slug === "classic-stripes" ? " project-gallery-section--classic-stripes" : "";
@@ -607,7 +673,12 @@
         "  </div>" +
         renderProjectHero(project, projectTitle) +
         "</section>" +
-        '<div class="project-sections" id="projectSections">' + renderProjectGallery(project) + "</div>" +
+        '<div class="project-sections" id="projectSections">' +
+        renderProjectDecisions(project) +
+        renderProjectGallery(project) +
+        (project.galleryNote ? renderProjectNote(project.galleryNote) : "") +
+        renderProjectLesson(project) +
+        "</div>" +
         '<footer class="project-foot">' +
         '  <img class="project-logo-inline" src="' + project.logo + '" alt="' + projectTitle + ' logo" data-slug="' + project.slug + '" />' +
         '  <div class="project-foot-nav">' +
