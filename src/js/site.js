@@ -139,7 +139,21 @@
     const rawValue = window.getComputedStyle(document.documentElement).getPropertyValue(propertyName).trim();
     const parsed = Number.parseFloat(rawValue);
 
-    return Number.isFinite(parsed) ? parsed : fallback;
+    if (Number.isFinite(parsed) && rawValue.indexOf("clamp(") !== 0 && rawValue.indexOf("calc(") !== 0) {
+      return parsed;
+    }
+
+    const probe = document.createElement("div");
+    probe.style.position = "absolute";
+    probe.style.visibility = "hidden";
+    probe.style.pointerEvents = "none";
+    probe.style.width = "var(" + propertyName + ")";
+    document.body.appendChild(probe);
+
+    const measuredValue = probe.getBoundingClientRect().width;
+    probe.remove();
+
+    return Number.isFinite(measuredValue) && measuredValue > 0 ? measuredValue : fallback;
   }
 
   function getLayoutGridSize() {
@@ -358,6 +372,16 @@
       return;
     }
 
+    let toggleButton = document.getElementById("accentLabToggle");
+    if (!toggleButton) {
+      toggleButton = document.createElement("button");
+      toggleButton.className = "accent-lab-toggle";
+      toggleButton.id = "accentLabToggle";
+      toggleButton.type = "button";
+      toggleButton.textContent = "Accent Lab";
+      document.body.appendChild(toggleButton);
+    }
+
     const panel = document.createElement("aside");
     panel.className = "accent-lab";
     panel.id = "accentLabPanel";
@@ -376,7 +400,6 @@
 
     const grid = document.getElementById("accentLabGrid");
     const resetButton = document.getElementById("accentLabReset");
-    const toggleButton = document.getElementById("accentLabToggle");
     const closeButton = document.getElementById("accentLabClose");
 
     function setOpen(nextOpen) {
@@ -577,7 +600,7 @@
 
     document.body.dataset.siteReady = "true";
     global.OKSTheme.init();
-    setIdleCursor(["home", "about", "contact"].includes(document.body.dataset.page));
+    setIdleCursor(["home", "works", "approach", "about", "contact"].includes(document.body.dataset.page));
     syncGridMetrics();
     global.OKSBackground.init();
     syncAccentSystem();

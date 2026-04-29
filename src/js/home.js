@@ -35,15 +35,6 @@
       return touchPreviewQuery.matches || window.innerWidth <= 760;
     }
 
-    function clearActive() {
-      activeSlug = null;
-      armedSlug = null;
-      renderPreview(null);
-      rail.querySelectorAll(".project-link").forEach(function reset(link) {
-        link.classList.remove("is-active");
-      });
-    }
-
     function renderPreview(project) {
       const isEmpty = !project;
       panel.classList.toggle("is-empty", isEmpty);
@@ -154,8 +145,8 @@
 
     if (global.OKSTheme && global.OKSTheme.onChange) {
       global.OKSTheme.onChange(function syncIdleAccent() {
-        if (!activeSlug) {
-          app.setAccent(app.getDefaultAccent());
+        if (activeSlug) {
+          renderPreview(store.projectBySlug[activeSlug]);
         }
       });
     }
@@ -165,10 +156,21 @@
       renderPreview(project);
     });
 
-    document.addEventListener("oks:accent-lab-open", function showSelectedWorksTitle() {
-      clearActive();
+    document.addEventListener("oks:accent-lab-open", function keepSelectedProjectVisible() {
+      if (activeSlug) {
+        renderPreview(store.projectBySlug[activeSlug]);
+        return;
+      }
+
+      if (homeProjects[0]) {
+        setActive(homeProjects[0].slug);
+      }
     });
 
-    renderPreview(null);
+    if (homeProjects[0]) {
+      setActive(homeProjects[0].slug);
+    } else {
+      renderPreview(null);
+    }
   });
 })(window);
