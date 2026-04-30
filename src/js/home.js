@@ -173,7 +173,9 @@
 
     document.addEventListener("oks:accent-lab-open", function keepSelectedProjectVisible() {
       if (activeSlug) {
-        renderPreview(store.projectBySlug[activeSlug]);
+        renderPreview(store.projectBySlug[activeSlug], {
+          useProjectAccent: false
+        });
       }
     });
 

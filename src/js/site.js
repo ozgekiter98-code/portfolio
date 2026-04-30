@@ -474,7 +474,11 @@
       toggleButton.setAttribute("aria-expanded", "false");
       toggleButton.setAttribute("aria-controls", "accentLabPanel");
       toggleButton.addEventListener("click", function onToggle() {
-        setOpen(!panel.classList.contains("is-open"));
+        const nextOpen = !panel.classList.contains("is-open");
+        if (nextOpen) {
+          setAccent(null);
+        }
+        setOpen(nextOpen);
       });
     }
 
