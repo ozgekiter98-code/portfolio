@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WrapChat — Abstract UI</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Nunito+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(165deg, #C2D2EA 0%, #AEBFDC 50%, #A6BCDA 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 20px 56px;
+      font-family: 'Nunito Sans', sans-serif;
+    }
+
+    /* ── Phone frame ── */
+    .phone-wrap {
+      filter:
+        drop-shadow(0 60px 100px rgba(42,65,118,0.40))
+        drop-shadow(0 22px 44px rgba(42,65,118,0.22))
+        drop-shadow(0 6px 14px rgba(42,65,118,0.13));
+    }
+    .phone-outer {
+      width: 360px;
+      background: linear-gradient(158deg, #F9FBFF 0%, #ECF2FA 100%);
+      border-radius: 54px;
+      padding: 13px;
+      box-shadow:
+        inset 0 0 0 1.5px rgba(255,255,255,0.97),
+        inset 0 2px 10px rgba(255,255,255,0.99);
+    }
+    .phone-screen {
+      width: 334px;
+      height: 680px;
+      border-radius: 42px;
+      overflow: hidden;
+      position: relative;
+      background: linear-gradient(180deg, #EAE6FE 0%, #F2EFFF 55%, #F8F6FF 100%);
+    }
+
+    /* ── Screen switching ── */
+    .screen {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transition: opacity 0.36s ease;
+      pointer-events: none;
+    }
+    .screen.active { opacity: 1; pointer-events: all; }
+
+    /* ── Navigation controls ── */
+    .nav-area {
+      margin-top: 30px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 13px;
+    }
+    .screen-label {
+      font-family: 'Nunito', sans-serif;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(38,58,108,0.42);
+    }
+    .nav-row { display: flex; align-items: center; gap: 16px; }
+    .nav-btn {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.52);
+      border: 1.5px solid rgba(255,255,255,0.86);
+      color: rgba(38,58,118,0.65);
+      font-size: 16px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      transition: all 0.15s;
+      -webkit-backdrop-filter: blur(8px);
+      backdrop-filter: blur(8px);
+    }
+    .nav-btn:hover { background: rgba(255,255,255,0.76); transform: scale(1.06); }
+    .nav-btn:disabled { opacity: 0.22; cursor: default; transform: none; }
+    .dots { display: flex; gap: 7px; align-items: center; }
+    .dot {
+      height: 7px; width: 7px;
+      border-radius: 4px;
+      background: rgba(38,58,108,0.22);
+      transition: all 0.24s;
+      cursor: pointer;
+    }
+    .dot.active { width: 22px; background: rgba(38,58,108,0.52); }
+  </style>
+</head>
+<body>
+
+  <div class="phone-wrap">
+    <div class="phone-outer">
+      <div class="phone-screen">
+
+
+        <!-- ═══════════════════════════════════════
+             SCREEN 0 · HOME / UPLOAD
+        ═══════════════════════════════════════ -->
+        <div class="screen active" id="s0">
+
+          <!-- Progress track (thin, top) -->
+          <div style="position:absolute;top:0;left:0;right:0;height:3px;background:rgba(140,110,220,0.10);z-index:10;border-radius:0 0 2px 2px;"></div>
+
+          <!-- ── Banner / branding zone ── -->
+          <div style="
+            position:absolute; left:0; top:0; width:334px; height:232px;
+            background: linear-gradient(148deg, #8462C0 0%, #A486D8 36%, #C2AAEC 66%, #DDD0F8 100%);
+            border-radius: 0 0 32px 32px;
+          ">
+
+            <!-- WrapChat logo — white, centered in banner -->
+            <svg
+              style="position:absolute; left:50%; top:36px; transform:translateX(-50%);"
+              width="96" height="82"
+              viewBox="0 0 920 789"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path fill="rgba(255,255,255,0.94)" d="M855,261c-.35.07-.69.26-1.28.91-3.44-5.95-8.4-10.73-14.61-14.88-38.47-25.72-97.2-19.92-138.63-.99-18.54,8.56-36.27,17.79-51.15,31.64l-32,29.79,78.06,62.39,37.07,28.98,85.92,62.44c11.3,8.21,21.03,16.81,28.86,28.14,14.37,20.79,15.87,45.88,4.12,68.14l-18.71,35.43-55.3,101.05-20.81,37.76c-.72-.16-1.28.16-1.84,1.21.56-6.53,1.96-13.23.92-20.21-3.61-24.34-21.63-38.42-41.46-51.38-21.43-14.01-42.07-27.57-62.53-43.27l-52.55-40.33-85.37-69.16-53.98-44.79-45.45,38.13c-52.78,44.28-105.95,86.82-161.16,127.73l-12.14,8.2-46.09,30.72c-23.42,15.61-37.73,42.94-27.01,68.66l-29.61-51.93-51.98-94.64-17.66-33.35c-8.14-15.37-10.28-33.11-4.73-49.72,10.68-31.94,39.11-46.71,64.99-65.78l60.81-44.81,57.18-44.75,55.59-44.83-15.9-15.02c-18.08-17.08-37.43-32.2-59.72-42.99-25.01-12.1-51.09-19.32-79.32-19.65-22.97-.27-45.2,3.53-64.49,15.47-6.55,4.06-12.63,9.12-16.64,15.92-.82,1.49-2.11-.51-1.08-1.54,4.82-15.22,11.24-29.61,18.45-44.46,10.19-20.99,19.52-41.53,31-61.77,16.5-29.09,45.79-58.28,73.66-77.1,54.67-36.92,118.26-27.55,174.71,1.91,22.62,12.15,41.53,28.06,60.16,45.65l36.56,34.52,52.43-48.77c38.6-35.91,99.55-61.25,152.79-56.8,26.68,2.23,50.57,11.57,72.35,27.45,19.68,14.35,36.63,30.89,52.02,49.72,8.76,10.72,15.36,21.86,21.76,34.22,13.2,25.52,25.33,50.72,36.64,76.98l7.15,19.76Z"/>
+              <path fill="rgba(195,228,255,0.78)" d="M189.72,397.03l-16.04-11.63-45.4-33.32-29.88-21.02c-10.24-7.2-19.78-14.3-27.75-24.21s-12.94-23.09-9.14-35.1l3.84-12.12c-1.04,1.03.25,3.03,1.08,1.54,4.01-6.8,10.09-11.86,16.64-15.92,19.29-11.94,41.52-15.75,64.49-15.47,28.23.34,54.3,7.55,79.32,19.65,22.29,10.79,41.65,25.91,59.72,42.99l15.9,15.02-55.59,44.83-57.18,44.75Z"/>
+              <path fill="rgba(195,228,255,0.78)" d="M855,261l1.56,5.7c5.41,13.86,2.3,28.8-7.32,40.32-9.12,10.92-20.17,18.69-31.82,27.16l-86.12,62.57,1.17,2.09-37.07-28.98-78.06-62.39,32-29.79c14.88-13.85,32.61-23.08,51.15-31.64,41.42-18.93,100.16-24.73,138.63.99,6.21,4.15,11.17,8.92,14.61,14.88.59-.64.93-.84,1.28-.91Z"/>
+              <path fill="rgba(195,228,255,0.78)" d="M756.56,731.77c-5.33,9.67-12.03,18.93-22.07,25.31-26.3,16.68-66.29,12.34-96.93,2.78-36.93-11.52-67.88-33.93-96.19-60.33l-81.19-75.74-46.06,42.44-42.71,40.32c-39.47,38.42-107.56,70.83-162.86,59.27-17.09-3.57-34.2-13.06-40.66-28.55-10.72-25.72,3.58-53.05,27.01-68.66l46.09-30.72,12.14-8.2c55.21-40.91,108.38-83.45,161.16-127.73l45.45-38.13,53.98,44.79,85.37,69.16,52.55,40.33c20.46,15.7,41.1,29.26,62.53,43.27,19.83,12.96,37.85,27.04,41.46,51.38,1.04,6.98-.36,13.68-.92,20.21.57-1.05,1.13-1.37,1.84-1.21Z"/>
+            </svg>
+
+            <!-- Dark floating oval (abstract decorative blob) -->
+            <div style="
+              position:absolute; left:60px; top:154px;
+              width:46px; height:30px; border-radius:50%;
+              background:#4020A0; opacity:0.70;
+              box-shadow: 0 10px 24px rgba(36,16,110,0.56), 0 3px 8px rgba(36,16,110,0.30);
+            "></div>
+
+            <!-- Amber sphere -->
+            <div style="
+              position:absolute; left:236px; top:98px;
+              width:35px; height:35px; border-radius:50%;
+              background:#F5A84C;
+              box-shadow: 0 11px 26px rgba(198,138,48,0.58), 0 4px 9px rgba(198,138,48,0.30);
+            "></div>
+
+            <!-- Tiny gold dot -->
+            <div style="
+              position:absolute; left:208px; top:158px;
+              width:12px; height:12px; border-radius:50%;
+              background:#F8C860;
+              box-shadow: 0 5px 14px rgba(200,158,38,0.55);
+            "></div>
+          </div>
+
+          <!-- ── 3 floating chips overlapping banner bottom ── -->
+
+          <!-- Purple — My Results -->
+          <div style="
+            position:absolute; left:18px; top:194px;
+            width:92px; height:84px; border-radius:22px;
+            background:#9B7ED8;
+            box-shadow: 0 15px 36px rgba(98,72,184,0.48), 0 5px 13px rgba(98,72,184,0.26);
+          ">
+            <div style="position:absolute;left:50%;top:20px;transform:translateX(-50%);width:32px;height:6px;border-radius:999px;background:rgba(255,255,255,0.44);"></div>
+            <div style="position:absolute;left:50%;top:32px;transform:translateX(-50%);width:22px;height:4px;border-radius:999px;background:rgba(255,255,255,0.26);"></div>
+            <div style="position:absolute;left:50%;top:52px;transform:translateX(-50%);width:40px;height:4px;border-radius:999px;background:rgba(255,255,255,0.18);"></div>
+          </div>
+
+          <!-- Teal — Settings -->
+          <div style="
+            position:absolute; left:122px; top:194px;
+            width:92px; height:84px; border-radius:22px;
+            background:#58ACD8;
+            box-shadow: 0 15px 36px rgba(52,128,192,0.46), 0 5px 13px rgba(52,128,192,0.24);
+          ">
+            <div style="position:absolute;left:50%;top:20px;transform:translateX(-50%);width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,0.28);"></div>
+            <div style="position:absolute;left:50%;top:57px;transform:translateX(-50%);width:34px;height:4px;border-radius:999px;background:rgba(255,255,255,0.20);"></div>
+          </div>
+
+          <!-- Amber — Credits -->
+          <div style="
+            position:absolute; left:226px; top:194px;
+            width:92px; height:84px; border-radius:22px;
+            background:#E8A03C;
+            box-shadow: 0 15px 36px rgba(198,128,42,0.48), 0 5px 13px rgba(198,128,42,0.26);
+          ">
+            <div style="position:absolute;left:50%;top:18px;transform:translateX(-50%);width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,0.26);"></div>
+            <div style="position:absolute;left:50%;top:57px;transform:translateX(-50%);width:30px;height:4px;border-radius:999px;background:rgba(255,255,255,0.20);"></div>
+          </div>
+
+          <!-- ── Large upload card ── -->
+          <div style="
+            position:absolute; left:18px; top:300px;
+            width:298px; height:140px; border-radius:24px;
+            background:#6E4CCC;
+            border: 1.5px dashed rgba(210,192,255,0.30);
+            box-shadow: 0 22px 56px rgba(76,44,178,0.46), 0 8px 20px rgba(76,44,178,0.24);
+          ">
+            <div style="position:absolute;left:50%;top:22px;transform:translateX(-50%);width:40px;height:40px;border-radius:14px;background:rgba(255,255,255,0.13);"></div>
+            <div style="position:absolute;left:50%;top:76px;transform:translateX(-50%);width:128px;height:8px;border-radius:999px;background:rgba(255,255,255,0.22);"></div>
+            <div style="position:absolute;left:50%;top:91px;transform:translateX(-50%);width:88px;height:6px;border-radius:999px;background:rgba(255,255,255,0.13);"></div>
+            <div style="position:absolute;left:50%;top:106px;transform:translateX(-50%);width:108px;height:5px;border-radius:999px;background:rgba(255,255,255,0.09);"></div>
+          </div>
+
+          <!-- ── Credit pill ── -->
+          <div style="
+            position:absolute; left:50%; top:460px; transform:translateX(-50%);
+            width:114px; height:30px; border-radius:999px;
+            background:#F5BF54;
+            box-shadow: 0 9px 24px rgba(198,156,38,0.48), 0 3px 8px rgba(198,156,38,0.24);
+          "></div>
+
+          <!-- ── Slide indicator bar ── -->
+          <div style="position:absolute;left:18px;top:514px;right:18px;height:36px;display:flex;align-items:center;">
+            <!-- dot -->
+            <div style="width:14px;height:14px;border-radius:50%;flex-shrink:0;background:#F5A84C;box-shadow:0 5px 14px rgba(198,138,48,0.58);"></div>
+            <!-- lines -->
+            <div style="flex:1;display:flex;gap:7px;padding:0 13px;">
+              <div style="flex:1;height:4px;border-radius:999px;background:rgba(148,118,210,0.22);"></div>
+              <div style="flex:1;height:4px;border-radius:999px;background:rgba(148,118,210,0.22);"></div>
+            </div>
+            <!-- arrow circle -->
+            <div style="width:30px;height:30px;border-radius:50%;flex-shrink:0;background:rgba(148,118,210,0.14);border:1.5px solid rgba(148,118,210,0.30);display:flex;align-items:center;justify-content:center;">
+              <div style="width:0;height:0;border-top:5px solid transparent;border-bottom:5px solid transparent;border-left:8px solid rgba(148,118,210,0.68);margin-left:2px;"></div>
+            </div>
+          </div>
+
+          <!-- ── 4 dock icons ── -->
+          <div style="position:absolute;left:17px;top:566px;width:60px;height:60px;border-radius:18px;background:#9B7ED8;box-shadow:0 11px 28px rgba(98,72,184,0.44),0 4px 10px rgba(98,72,184,0.22);"></div>
+          <div style="position:absolute;left:97px;top:566px;width:60px;height:60px;border-radius:18px;background:#7E94B2;box-shadow:0 11px 28px rgba(78,98,145,0.36),0 4px 10px rgba(78,98,145,0.18);"></div>
+          <div style="position:absolute;left:177px;top:566px;width:60px;height:60px;border-radius:18px;background:#6AAFD4;box-shadow:0 11px 28px rgba(52,128,190,0.44),0 4px 10px rgba(52,128,190,0.22);"></div>
+          <div style="position:absolute;left:257px;top:566px;width:60px;height:60px;border-radius:18px;background:#F5A84C;box-shadow:0 11px 28px rgba(198,138,48,0.46),0 4px 10px rgba(198,138,48,0.24);"></div>
+
+          <!-- Home indicator -->
+          <div style="position:absolute;bottom:7px;left:50%;transform:translateX(-50%);width:112px;height:4px;border-radius:2px;background:rgba(98,72,184,0.18);"></div>
+        </div>
+
+
+        <!-- ═══════════════════════════════════════
+             SCREEN 1 · RELATIONSHIP SELECT
+        ═══════════════════════════════════════ -->
+        <div class="screen" id="s1">
+
+          <!-- Progress fill: 33% -->
+          <div style="position:absolute;top:0;left:0;right:0;height:3px;background:rgba(140,110,220,0.10);z-index:10;">
+            <div style="height:100%;width:33%;background:rgba(140,110,220,0.40);border-radius:0 2px 2px 0;"></div>
+          </div>
+
+          <!-- ── Header pills ── -->
+          <div style="
+            position:absolute; left:18px; top:18px;
+            width:72px; height:30px; border-radius:999px;
+            background:rgba(255,255,255,0.72);
+            box-shadow:0 5px 14px rgba(98,72,184,0.14), 0 1px 4px rgba(98,72,184,0.08);
+          "></div>
+          <div style="
+            position:absolute; left:104px; top:18px;
+            width:108px; height:30px; border-radius:999px;
+            background:rgba(155,126,216,0.22);
+            border:1px solid rgba(155,126,216,0.42);
+            box-shadow:0 5px 14px rgba(98,72,184,0.12);
+          "></div>
+
+          <!-- ── Subtitle placeholder lines ── -->
+          <div style="position:absolute;left:18px;top:64px;width:192px;height:7px;border-radius:999px;background:rgba(148,118,210,0.18);"></div>
+          <div style="position:absolute;left:18px;top:78px;width:132px;height:5px;border-radius:999px;background:rgba(148,118,210,0.11);"></div>
+
+          <!-- ── Romantic row (3 columns) ── -->
+
+          <!-- Partner — purple (selected: brighter, higher shadow) -->
+          <div style="
+            position:absolute; left:18px; top:102px;
+            width:92px; height:104px; border-radius:22px;
+            background:#9B7ED8;
+            box-shadow:0 16px 38px rgba(98,72,184,0.50), 0 5px 13px rgba(98,72,184,0.26);
+          ">
+            <!-- selection dot -->
+            <div style="position:absolute;left:50%;top:10px;transform:translateX(-50%);width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.72);"></div>
+            <!-- icon blob -->
+            <div style="position:absolute;left:50%;top:30px;transform:translateX(-50%);width:32px;height:24px;border-radius:50%;background:rgba(255,255,255,0.30);"></div>
+            <!-- label line -->
+            <div style="position:absolute;left:50%;top:68px;transform:translateX(-50%);width:50px;height:7px;border-radius:999px;background:rgba(255,255,255,0.40);"></div>
+          </div>
+
+          <!-- Dating — amber (unselected: dimmer) -->
+          <div style="
+            position:absolute; left:122px; top:102px;
+            width:92px; height:104px; border-radius:22px;
+            background:#F5A84C; opacity:0.68;
+            box-shadow:0 10px 24px rgba(198,138,48,0.32), 0 3px 8px rgba(198,138,48,0.16);
+          ">
+            <div style="position:absolute;left:50%;top:30px;transform:translateX(-50%);width:30px;height:22px;border-radius:50%;background:rgba(255,255,255,0.26);"></div>
+            <div style="position:absolute;left:50%;top:68px;transform:translateX(-50%);width:50px;height:7px;border-radius:999px;background:rgba(255,255,255,0.30);"></div>
+          </div>
+
+          <!-- Ex — orange (unselected: dimmer) -->
+          <div style="
+            position:absolute; left:226px; top:102px;
+            width:92px; height:104px; border-radius:22px;
+            background:#E07040; opacity:0.68;
+            box-shadow:0 10px 24px rgba(198,100,48,0.32), 0 3px 8px rgba(198,100,48,0.16);
+          ">
+            <div style="position:absolute;left:50%;top:30px;transform:translateX(-50%);width:28px;height:22px;border-radius:50%;background:rgba(255,255,255,0.26);"></div>
+            <div style="position:absolute;left:50%;top:68px;transform:translateX(-50%);width:50px;height:7px;border-radius:999px;background:rgba(255,255,255,0.30);"></div>
+          </div>
+
+          <!-- ── Other grid row 1 (2 columns) ── -->
+
+          <!-- Related — teal -->
+          <div style="
+            position:absolute; left:12px; top:222px;
+            width:148px; height:102px; border-radius:22px;
+            background:#3DC4BF; opacity:0.74;
+            box-shadow:0 11px 28px rgba(38,156,154,0.38), 0 4px 10px rgba(38,156,154,0.20);
+          ">
+            <div style="position:absolute;left:50%;top:26px;transform:translateX(-50%);width:34px;height:26px;border-radius:11px;background:rgba(255,255,255,0.26);"></div>
+            <div style="position:absolute;left:50%;top:64px;transform:translateX(-50%);width:58px;height:6px;border-radius:999px;background:rgba(255,255,255,0.28);"></div>
+          </div>
+
+          <!-- Friend — blue -->
+          <div style="
+            position:absolute; left:174px; top:222px;
+            width:148px; height:102px; border-radius:22px;
+            background:#6AAFD4; opacity:0.74;
+            box-shadow:0 11px 28px rgba(52,128,190,0.38), 0 4px 10px rgba(52,128,190,0.20);
+          ">
+            <div style="position:absolute;left:50%;top:26px;transform:translateX(-50%);width:34px;height:26px;border-radius:11px;background:rgba(255,255,255,0.26);"></div>
+            <div style="position:absolute;left:50%;top:64px;transform:translateX(-50%);width:58px;height:6px;border-radius:999px;background:rgba(255,255,255,0.28);"></div>
+          </div>
+
+          <!-- ── Other grid row 2 (2 columns) ── -->
+
+          <!-- Colleague — lime -->
+          <div style="
+            position:absolute; left:12px; top:338px;
+            width:148px; height:102px; border-radius:22px;
+            background:#A8C82C; opacity:0.74;
+            box-shadow:0 11px 28px rgba(138,178,28,0.38), 0 4px 10px rgba(138,178,28,0.20);
+          ">
+            <div style="position:absolute;left:50%;top:26px;transform:translateX(-50%);width:34px;height:26px;border-radius:11px;background:rgba(255,255,255,0.26);"></div>
+            <div style="position:absolute;left:50%;top:64px;transform:translateX(-50%);width:58px;height:6px;border-radius:999px;background:rgba(255,255,255,0.28);"></div>
+          </div>
+
+          <!-- Other — grey -->
+          <div style="
+            position:absolute; left:174px; top:338px;
+            width:148px; height:102px; border-radius:22px;
+            background:#96A8BC; opacity:0.72;
+            box-shadow:0 11px 28px rgba(78,100,142,0.30), 0 4px 10px rgba(78,100,142,0.16);
+          ">
+            <div style="position:absolute;left:50%;top:26px;transform:translateX(-50%);width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,0.24);"></div>
+            <div style="position:absolute;left:50%;top:64px;transform:translateX(-50%);width:58px;height:6px;border-radius:999px;background:rgba(255,255,255,0.24);"></div>
+          </div>
+
+          <!-- ── Continue button ── -->
+          <div style="
+            position:absolute; left:18px; top:462px;
+            width:298px; height:48px; border-radius:999px;
+            background:#A080F0;
+            box-shadow:0 16px 40px rgba(118,86,218,0.48), 0 5px 14px rgba(118,86,218,0.24);
+          "></div>
+
+          <!-- Home indicator -->
+          <div style="position:absolute;bottom:7px;left:50%;transform:translateX(-50%);width:112px;height:4px;border-radius:2px;background:rgba(98,72,184,0.18);"></div>
+        </div>
+
+
+        <!-- ═══════════════════════════════════════
+             SCREEN 2 · REPORT SELECT
+        ═══════════════════════════════════════ -->
+        <div class="screen" id="s2">
+
+          <!-- Progress fill: 66% -->
+          <div style="position:absolute;top:0;left:0;right:0;height:3px;background:rgba(140,110,220,0.10);z-index:10;">
+            <div style="height:100%;width:66%;background:rgba(140,110,220,0.40);border-radius:0 2px 2px 0;"></div>
+          </div>
+
+          <!-- ── Header pills ── -->
+          <div style="position:absolute;left:18px;top:18px;width:72px;height:30px;border-radius:999px;background:rgba(255,255,255,0.72);box-shadow:0 5px 14px rgba(98,72,184,0.14),0 1px 4px rgba(98,72,184,0.08);"></div>
+          <div style="position:absolute;left:104px;top:18px;width:108px;height:30px;border-radius:999px;background:rgba(155,126,216,0.22);border:1px solid rgba(155,126,216,0.42);box-shadow:0 5px 14px rgba(98,72,184,0.12);"></div>
+
+          <!-- Subtitle line -->
+          <div style="position:absolute;left:18px;top:62px;width:172px;height:7px;border-radius:999px;background:rgba(148,118,210,0.18);"></div>
+
+          <!-- ── Bundle chips ── -->
+          <div style="position:absolute;left:18px;top:82px;width:90px;height:28px;border-radius:999px;background:rgba(255,255,255,0.62);box-shadow:0 4px 11px rgba(98,72,184,0.11);"></div>
+          <!-- Active bundle chip -->
+          <div style="position:absolute;left:120px;top:82px;width:100px;height:28px;border-radius:999px;background:#7050CC;box-shadow:0 7px 18px rgba(96,66,196,0.46),0 2px 7px rgba(96,66,196,0.22);"></div>
+          <div style="position:absolute;left:232px;top:82px;width:84px;height:28px;border-radius:999px;background:rgba(255,255,255,0.62);box-shadow:0 4px 11px rgba(98,72,184,0.11);"></div>
+
+          <!-- ── Report cards ── -->
+          <!-- Each selected card: solid bg + colored shadow -->
+          <!-- Each unselected card: translucent + thin border -->
+
+          <!-- General Wrapped — selected, purple -->
+          <div style="position:absolute;left:18px;top:126px;width:298px;height:62px;border-radius:18px;background:#6A48CC;box-shadow:0 13px 32px rgba(88,56,180,0.44),0 4px 11px rgba(88,56,180,0.22);">
+            <div style="position:absolute;left:13px;top:50%;transform:translateY(-50%) rotate(-8deg);width:38px;height:38px;border-radius:12px;background:#4828A8;box-shadow:0 4px 10px rgba(38,18,120,0.38);"></div>
+            <div style="position:absolute;left:65px;top:18px;width:118px;height:8px;border-radius:999px;background:rgba(255,255,255,0.36);"></div>
+            <div style="position:absolute;left:65px;top:33px;width:78px;height:5px;border-radius:999px;background:rgba(255,255,255,0.18);"></div>
+            <div style="position:absolute;right:14px;top:50%;transform:translateY(-50%);width:20px;height:20px;border-radius:50%;background:#B09AF0;box-shadow:0 4px 10px rgba(118,88,218,0.48);"></div>
+          </div>
+
+          <!-- Toxicity — selected, red -->
+          <div style="position:absolute;left:18px;top:198px;width:298px;height:62px;border-radius:18px;background:#B82C2C;box-shadow:0 13px 32px rgba(158,36,36,0.44),0 4px 11px rgba(158,36,36,0.22);">
+            <div style="position:absolute;left:13px;top:50%;transform:translateY(-50%) rotate(-8deg);width:38px;height:38px;border-radius:12px;background:#8B1A1A;box-shadow:0 4px 10px rgba(100,18,18,0.42);"></div>
+            <div style="position:absolute;left:65px;top:18px;width:108px;height:8px;border-radius:999px;background:rgba(255,255,255,0.34);"></div>
+            <div style="position:absolute;left:65px;top:33px;width:72px;height:5px;border-radius:999px;background:rgba(255,255,255,0.18);"></div>
+            <div style="position:absolute;right:14px;top:50%;transform:translateY(-50%);width:20px;height:20px;border-radius:50%;background:#E84040;box-shadow:0 4px 10px rgba(178,36,36,0.52);"></div>
+          </div>
+
+          <!-- Love Language — selected, pink -->
+          <div style="position:absolute;left:18px;top:270px;width:298px;height:62px;border-radius:18px;background:#AE4478;box-shadow:0 13px 32px rgba(158,58,110,0.42),0 4px 11px rgba(158,58,110,0.22);">
+            <div style="position:absolute;left:13px;top:50%;transform:translateY(-50%) rotate(-8deg);width:38px;height:38px;border-radius:12px;background:#8B3A5A;box-shadow:0 4px 10px rgba(108,38,72,0.40);"></div>
+            <div style="position:absolute;left:65px;top:18px;width:114px;height:8px;border-radius:999px;background:rgba(255,255,255,0.34);"></div>
+            <div style="position:absolute;left:65px;top:33px;width:76px;height:5px;border-radius:999px;background:rgba(255,255,255,0.18);"></div>
+            <div style="position:absolute;right:14px;top:50%;transform:translateY(-50%);width:20px;height:20px;border-radius:50%;background:#F08EBF;box-shadow:0 4px 10px rgba(188,88,148,0.52);"></div>
+          </div>
+
+          <!-- Growth — unselected, teal -->
+          <div style="position:absolute;left:18px;top:342px;width:298px;height:62px;border-radius:18px;background:rgba(58,240,192,0.08);border:1px solid rgba(58,240,192,0.22);box-shadow:0 6px 16px rgba(28,178,138,0.10);">
+            <div style="position:absolute;left:13px;top:50%;transform:translateY(-50%) rotate(-8deg);width:38px;height:38px;border-radius:12px;background:rgba(26,107,90,0.42);opacity:0.60;"></div>
+            <div style="position:absolute;left:65px;top:18px;width:100px;height:7px;border-radius:999px;background:rgba(58,240,192,0.18);"></div>
+            <div style="position:absolute;left:65px;top:32px;width:64px;height:5px;border-radius:999px;background:rgba(58,240,192,0.11);"></div>
+            <div style="position:absolute;right:14px;top:50%;transform:translateY(-50%);width:20px;height:20px;border-radius:50%;border:1.5px solid rgba(58,240,192,0.28);"></div>
+          </div>
+
+          <!-- Accountability — unselected, blue -->
+          <div style="position:absolute;left:18px;top:414px;width:298px;height:62px;border-radius:18px;background:rgba(106,180,240,0.08);border:1px solid rgba(106,180,240,0.22);box-shadow:0 6px 16px rgba(52,128,198,0.10);">
+            <div style="position:absolute;left:13px;top:50%;transform:translateY(-50%) rotate(-8deg);width:38px;height:38px;border-radius:12px;background:rgba(26,58,139,0.42);opacity:0.60;"></div>
+            <div style="position:absolute;left:65px;top:18px;width:110px;height:7px;border-radius:999px;background:rgba(106,180,240,0.18);"></div>
+            <div style="position:absolute;left:65px;top:32px;width:70px;height:5px;border-radius:999px;background:rgba(106,180,240,0.11);"></div>
+            <div style="position:absolute;right:14px;top:50%;transform:translateY(-50%);width:20px;height:20px;border-radius:50%;border:1.5px solid rgba(106,180,240,0.28);"></div>
+          </div>
+
+          <!-- Energy — unselected, amber -->
+          <div style="position:absolute;left:18px;top:486px;width:298px;height:62px;border-radius:18px;background:rgba(240,160,64,0.08);border:1px solid rgba(240,160,64,0.22);box-shadow:0 6px 16px rgba(198,128,38,0.10);">
+            <div style="position:absolute;left:13px;top:50%;transform:translateY(-50%) rotate(-8deg);width:38px;height:38px;border-radius:12px;background:rgba(139,90,26,0.42);opacity:0.60;"></div>
+            <div style="position:absolute;left:65px;top:18px;width:96px;height:7px;border-radius:999px;background:rgba(240,160,64,0.18);"></div>
+            <div style="position:absolute;left:65px;top:32px;width:60px;height:5px;border-radius:999px;background:rgba(240,160,64,0.11);"></div>
+            <div style="position:absolute;right:14px;top:50%;transform:translateY(-50%);width:20px;height:20px;border-radius:50%;border:1.5px solid rgba(240,160,64,0.28);"></div>
+          </div>
+
+          <!-- ── Run button ── -->
+          <div style="
+            position:absolute; left:18px; top:570px;
+            width:298px; height:48px; border-radius:999px;
+            background:#A080F0;
+            box-shadow:0 16px 40px rgba(118,86,218,0.48), 0 5px 14px rgba(118,86,218,0.24);
+          "></div>
+
+          <!-- Home indicator -->
+          <div style="position:absolute;bottom:7px;left:50%;transform:translateX(-50%);width:112px;height:4px;border-radius:2px;background:rgba(98,72,184,0.18);"></div>
+        </div>
+
+
+      </div><!-- /phone-screen -->
+    </div><!-- /phone-outer -->
+  </div><!-- /phone-wrap -->
+
+
+  <!-- Navigation -->
+  <div class="nav-area">
+    <div class="screen-label" id="screen-label">01 — Home</div>
+    <div class="nav-row">
+      <button class="nav-btn" id="prev-btn" disabled>←</button>
+      <div class="dots">
+        <div class="dot active" id="dot-0"></div>
+        <div class="dot" id="dot-1"></div>
+        <div class="dot" id="dot-2"></div>
+      </div>
+      <button class="nav-btn" id="next-btn">→</button>
+    </div>
+  </div>
+
+  <script>
+    const LABELS = ['01 — Home', '02 — Relationship', '03 — Report Select'];
+    let current = 0;
+
+    function show(idx) {
+      ['s0', 's1', 's2'].forEach((id, i) => {
+        document.getElementById(id).classList.toggle('active', i === idx);
+        document.getElementById('dot-' + i).classList.toggle('active', i === idx);
+      });
+      document.getElementById('screen-label').textContent = LABELS[idx];
+      document.getElementById('prev-btn').disabled = idx === 0;
+      document.getElementById('next-btn').disabled = idx === 2;
+      current = idx;
+    }
+
+    document.getElementById('prev-btn').addEventListener('click', () => show(Math.max(0, current - 1)));
+    document.getElementById('next-btn').addEventListener('click', () => show(Math.min(2, current + 1)));
+    ['dot-0', 'dot-1', 'dot-2'].forEach((id, i) =>
+      document.getElementById(id).addEventListener('click', () => show(i))
+    );
+  </script>
+</body>
+</html>

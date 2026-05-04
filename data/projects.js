@@ -6,8 +6,8 @@
       context: "Digital",
       category: "Luxury Jewellery Branding",
       description:
-        "A calm, luminous identity system for a recycled luxury jewellery brand. The homepage preview balances softness, material detail and a quiet sense of transformation.",
-      labels: ["Art Direction", "Brand World", "Digital Presence"],
+        "A recycled luxury jewellery concept built around transformation, combining symbolic storytelling, material detail, and a spatially informed visual language that connects object, identity, and environment.",
+      labels: ["Brand Identity", "Art Direction", "Interior Design"],
       accentRgb: "248, 208, 107",
       heroImage: "../assets/projects/ISTINARA/Bitti.png",
       logo: "../assets/projects/ISTINARA/istinara_logo.png",
@@ -23,10 +23,14 @@
         {
           heading: "Directing without always designing",
           body: "For the first time, the role was partly to protect a creative direction rather than produce all the work. Learning when to make something and when to create space for the team to make it."
+        },
+        {
+          heading: "One language across graphic and interior design",
+          body: "The project moves between branding, jewellery display, and store interior thinking. The key decision was to keep the same design language across all scales, so the architectural and graphic elements feel like parts of one world."
         }
       ],
       lesson:
-        "Leading a team while holding creative direction meant learning <em>when to act and when to wait</em>. The project made clear that a director's job is often to make <em>fewer decisions, not more</em>: to protect the ones that matter and let the rest be worked out by the people closest to the work.",
+        "Carrying one concept across <em>brand identity, visual storytelling, and spatial design</em> as <em>creative lead</em>. The project became about making <em>transformation visible at every level</em>, from symbolism and material to jewellery display and the store environment.",
       galleryNote:
         "Add gallery images for ISTINARA here. Place image files in /assets/projects/ISTINARA/ and update the files array in the PROJECT_GALLERIES istinara entry inside src/js/project.js."
     },
@@ -37,7 +41,7 @@
       category: "Vintage Football E-Commerce",
       description:
         "A nostalgic retail concept built around archival jersey culture, tactile product storytelling and a timeline-aware visual language that shifts between past and present.",
-      labels: ["E-Commerce", "Content System", "Campaign Art"],
+      labels: ["E-Commerce", "Digital Presence", "Promotional Assets"],
       accentRgb: "86, 124, 176",
       heroImage: "../assets/projects/The_Classic_Stripes/THECLASSICSTRIPES.png",
       logo: "../assets/projects/The_Classic_Stripes/tcs_logo.png",
@@ -56,7 +60,7 @@
         }
       ],
       lesson:
-        "First time working across marketing strategy, content, and web execution in one project. It taught me that a product page is <em>also an argument</em>: what you say about an object <em>shapes whether someone believes it is worth having</em>."
+        "Working across <em>content, product storytelling, and web execution</em> in one project. It taught me how to prepare <em>promotional visuals for print</em>, where <em>color, scale, resolution, and material behavior</em> matter differently than they do on screen."
     },
     {
       slug: "wrapchat",
@@ -64,8 +68,8 @@
       context: "Digital",
       category: "AI Relationship Intelligence",
       description:
-        "A mobile product that analyses real chat conversations to surface relationship dynamics — from love languages to accountability patterns — through a calm, insight-driven interface.",
-      labels: ["UX/UI", "Product Vision", "AI Product"],
+        "A conversational analysis tool that transforms exported chat histories into structured insight cards, revealing communication patterns, emotional tone, and relationship dynamics through a clear, readable visual system.",
+      labels: ["UX/UI", "Product Design", "AI Product"],
       accentRgb: "139, 92, 246",
       heroImage: "../assets/projects/Wrapchat/WrapchatLogo.svg",
       logo: "../assets/projects/Wrapchat/WrapchatLogo.svg",
@@ -84,7 +88,7 @@
         }
       ],
       lesson:
-        "First complete product cycle from concept through <em>UX and UI</em> to a working app, including <em>the legal and compliance layer</em>. The project changed how I use <em>AI</em> in my workflow: not as a feature to add onto a product, but as a <em>collaborator in the design process</em> itself."
+        "First complete product cycle from concept through <em>UX and UI</em> to a working app. The project changed how I think about building products, from <em>privacy, pricing, and testing decisions</em> to using <em>AI in my workflow</em> as a <em>collaborator in the design process</em>."
     }
   ];
 

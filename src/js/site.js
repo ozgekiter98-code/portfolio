@@ -475,7 +475,7 @@
       toggleButton.setAttribute("aria-controls", "accentLabPanel");
       toggleButton.addEventListener("click", function onToggle() {
         const nextOpen = !panel.classList.contains("is-open");
-        if (nextOpen) {
+        if (nextOpen && document.body.dataset.page !== "project") {
           setAccent(null);
         }
         setOpen(nextOpen);

@@ -4,7 +4,6 @@
       return;
     }
 
-    global.OKSSite.setAccent("145, 126, 107");
     global.OKSSite.setContext("Digital");
   });
 })(window);

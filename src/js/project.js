@@ -31,7 +31,7 @@
     },
     {
       from: "You treat replies like a limited resource. Alex is always waiting.",
-      to: "Alex is more impulsive and present in bursts, while she’s more steady but slightly distant. When Alex spirals or overthinks, she grounds him, but when she disappears for a while, he fills the space with updates. It balances out, but you can feel they rely on each other in different ways."
+      to: "Alex is more impulsive and present in bursts, while she's more steady but slightly distant. When Alex spirals or overthinks, she grounds him, but when she disappears for a while, he fills the space with updates. It balances out, but you can feel they rely on each other in different ways."
     },
     {
       from: '"You: read at 14:32. Replied at... eventually."',
@@ -52,7 +52,7 @@
     {
       from:
         "Alex's humor lands through accidental escalation — a one-word reply that somehow kills the thread, or a wildly unnecessary follow-up that extends the bit past the point of reason. The laughs are always earned.",
-      to: 'There’s a point where Alex says something like “I feel like I’m just drifting lately” and it lands heavier than usual. She responds, but more carefully than normal — less joking, more direct. The tone shifts for a bit into something more serious before slowly going back to normal.'
+      to: "There’s a point where Alex says something like “I feel like I’m just drifting lately” and it lands heavier than usual. She responds, but more carefully than normal — less joking, more direct. The tone shifts for a bit into something more serious before slowly going back to normal."
     },
     {
       from:
@@ -62,11 +62,11 @@
     {
       from:
         "Warm and chaotic. You argue about food and it's somehow wholesome. Humor is the primary bonding mechanism — you both initiate jokes, both occasionally ghost each other, and both clearly want to talk.",
-      to: "This feels like a friendship built on constant small check-ins rather than big conversations. It’s a mix of random daily updates, slightly chaotic energy, and quiet support — like Alex sending voice notes while walking somewhere and her replying hours later with something completely different but still connected. It doesn’t need structure to feel consistent."
+      to: "This feels like a friendship built on constant small check-ins rather than big conversations. It's a mix of random daily updates, slightly chaotic energy, and quiet support — like Alex sending voice notes while walking somewhere and her replying hours later with something completely different but still connected. It doesn't need structure to feel consistent."
     },
     {
       from: '"Warm and chaotic. You argue about food and it\'s somehow wholesome."',
-      to: "They’re not always emotionally in sync, but they keep returning to each other anyway. One of them might be fully present while the other is distracted or distant, but the connection doesn’t break — it just stretches a bit. It’s less about perfect timing and more about consistency over time."
+      to: "They're not always emotionally in sync, but they keep returning to each other anyway. One of them might be fully present while the other is distracted or distant, but the connection doesn't break — it just stretches a bit. It's less about perfect timing and more about consistency over time."
     }
   ];
 
@@ -198,11 +198,39 @@
     let observer = null;
     let frameRequest = 0;
 
+    function autoFillAuth(doc) {
+      if (!doc || !doc.body) {
+        return;
+      }
+
+      const emailInput = doc.querySelector('input[type="email"]');
+      const pwInput    = doc.querySelector('input[type="password"]');
+
+      if (!emailInput || !pwInput || (emailInput.value && pwInput.value)) {
+        return;
+      }
+
+      const win = doc.defaultView;
+      const nativeSetter = Object.getOwnPropertyDescriptor(
+        win.HTMLInputElement.prototype, "value"
+      ).set;
+
+      function fillInput(input, value) {
+        nativeSetter.call(input, value);
+        input.dispatchEvent(new win.Event("input",  { bubbles: true }));
+        input.dispatchEvent(new win.Event("change", { bubbles: true }));
+      }
+
+      fillInput(emailInput, "hello@oks.design");
+      fillInput(pwInput,    "demo1234");
+    }
+
     function syncDemoText(doc) {
       hideWrapchatDemoParts(doc);
       scaleWrapchatDemoToFrame(doc, iframe);
       rewriteWrapchatDemoText(doc);
       replaceWrapchatDemoLogo(doc);
+      autoFillAuth(doc);
     }
 
     function observeDemo(doc) {
@@ -567,6 +595,31 @@
     );
   }
 
+  function renderWrapchatDemoSection() {
+    return (
+      '<section class="project-demo-section" id="wrapchat-demo" aria-label="Interactive demo">' +
+      '  <div class="project-section-head">' +
+      '    <p class="eyebrow">Interactive demo</p>' +
+      '    <p class="project-demo-hint">Type anything to proceed with the demo.</p>' +
+      '  </div>' +
+      '  <div class="phone-mockup-outer">' +
+      '    <div class="phone-mockup">' +
+      '      <div class="phone-chrome">' +
+      '        <div class="phone-notch"></div>' +
+      '        <iframe class="phone-screen"' +
+      '          src="../assets/projects/Wrapchat/WrapchatUI/wrapchat-app.html"' +
+      '          title="Wrapchat — interactive demo"' +
+      '          sandbox="allow-scripts allow-same-origin"' +
+      '          loading="lazy">' +
+      '        </iframe>' +
+      '        <div class="phone-home-bar"></div>' +
+      '      </div>' +
+      '    </div>' +
+      '  </div>' +
+      '</section>'
+    );
+  }
+
   function createTag(label) {
     const tag = document.createElement("span");
     tag.className = "meta-tag";
@@ -583,6 +636,10 @@
       return " project-overview--wrapchat";
     }
 
+    if (project.slug === "istinara") {
+      return " project-overview--istinara";
+    }
+
     if (project.slug === "classic-stripes") {
       return " project-overview--desktop-demo";
     }
@@ -593,21 +650,38 @@
   function renderProjectHero(project, projectTitle) {
     if (project.slug === "wrapchat") {
       return (
-        '<figure class="project-hero project-hero--demo">' +
-        '  <div class="phone-mockup-outer phone-mockup-outer--hero">' +
-        '    <div class="phone-mockup">' +
-        '      <div class="phone-chrome">' +
-        '        <div class="phone-notch"></div>' +
-        '        <iframe class="phone-screen"' +
-        '          src="../assets/projects/Wrapchat/WrapchatUI/wrapchat-app.html"' +
-        '          title="Wrapchat — interactive demo"' +
-        '          sandbox="allow-scripts allow-same-origin"' +
-        '          loading="lazy">' +
-        '        </iframe>' +
-        '        <div class="phone-home-bar"></div>' +
+        '<figure class="project-hero project-hero--animation" id="wrapchatHero">' +
+        '  <div class="wrapchat-hero-panel wrapchat-hero-panel--ui">' +
+        '    <iframe class="project-hero-animation-frame"' +
+        '      src="../assets/projects/Wrapchat/wrapchat-hero.html"' +
+        '      title="Wrapchat — abstract UI animation"' +
+        '      allowtransparency="true">' +
+        '    </iframe>' +
+        '  </div>' +
+        '  <div class="wrapchat-hero-panel wrapchat-hero-panel--demo">' +
+        '    <div class="phone-mockup-outer">' +
+        '      <div class="phone-mockup">' +
+        '        <div class="phone-chrome">' +
+        '          <div class="phone-notch"></div>' +
+        '          <iframe class="phone-screen"' +
+        '            data-src="../assets/projects/Wrapchat/WrapchatUI/wrapchat-app.html"' +
+        '            title="Wrapchat — interactive demo"' +
+        '            sandbox="allow-scripts allow-same-origin">' +
+        '          </iframe>' +
+        '          <div class="phone-home-bar"></div>' +
+        '        </div>' +
         '      </div>' +
         '    </div>' +
         '  </div>' +
+        '</figure>'
+      );
+    }
+
+    if (project.slug === "istinara") {
+      return (
+        '<figure class="project-hero project-hero--istinara">' +
+        '  <!-- TODO: Replace ISTINARA hero placeholder with final logo / hero image asset. -->' +
+        '  <img src="' + project.heroImage + '" alt="' + projectTitle + ' — hero image" />' +
         '</figure>'
       );
     }
@@ -637,6 +711,27 @@
       '  <img src="' + project.heroImage + '" alt="' + projectTitle + ' — project image" />' +
       '</figure>'
     );
+  }
+
+  function setupWrapchatHeroSwitch() {
+    var hero = document.getElementById("wrapchatHero");
+    var btn  = document.getElementById("tryDemoBtn");
+    if (!hero || !btn) { return; }
+
+    btn.addEventListener("click", function onTryDemo() {
+      hero.classList.add("is-demo-active");
+
+      var iframe = hero.querySelector(".wrapchat-hero-panel--demo .phone-screen");
+      if (iframe && iframe.dataset.src && !iframe.getAttribute("src")) {
+        iframe.setAttribute("src", iframe.dataset.src);
+        setupWrapchatDemoFrame(iframe);
+      }
+
+      var hint = document.createElement("p");
+      hint.className = "project-demo-hint";
+      hint.textContent = "Press log in to explore";
+      btn.replaceWith(hint);
+    });
   }
 
   document.addEventListener("DOMContentLoaded", function onReady() {
@@ -691,6 +786,15 @@
         labels.appendChild(createTag(label));
       });
 
+      if (project.slug === "wrapchat") {
+        const tryDemoBtn = document.createElement("button");
+        tryDemoBtn.className = "demo-cta-pill";
+        tryDemoBtn.type = "button";
+        tryDemoBtn.id = "tryDemoBtn";
+        tryDemoBtn.textContent = "Try demo";
+        document.querySelector(".project-body-meta").appendChild(tryDemoBtn);
+      }
+
       if (project.liveUrl) {
         const demo = document.createElement("a");
         demo.className = "action-link";
@@ -702,7 +806,7 @@
       }
 
       if (project.slug === "wrapchat") {
-        setupWrapchatDemoFrame(host.querySelector(".project-hero .phone-screen"));
+        setupWrapchatHeroSwitch();
       }
 
       if (project.slug === "classic-stripes") {
