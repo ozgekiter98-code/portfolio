@@ -1,11 +1,16 @@
 (function attachProjectPage(global) {
+  const VERCEL_BLOB_BASE_URL = "https://yyukhmkupbovs5lx.public.blob.vercel-storage.com";
   const MEDIA_BLOB_BASE_URL = "https://yyukhmkupbovs5lx.public.blob.vercel-storage.com/assets/Media";
   const CLASSIC_STRIPES_ASSET_BLOB_BASE_URL =
     "https://yyukhmkupbovs5lx.public.blob.vercel-storage.com/assets/projects/The_Classic_Stripes/TCS-WebsiteUI/public/TCSassets";
+  const ISTINARA_ASSET_BLOB_BASE_URL = VERCEL_BLOB_BASE_URL + "/assets/projects/ISTINARA";
+  const ISTINARA_AXO_LIGHT_SRC = ISTINARA_ASSET_BLOB_BASE_URL + "/Axo-light.png";
+  const ISTINARA_AXO_DARK_SRC = ISTINARA_ASSET_BLOB_BASE_URL + "/Axo-dark.png";
   const PROJECT_GALLERIES = {
     istinara: {
+      basePath: ISTINARA_ASSET_BLOB_BASE_URL,
       folder: "ISTINARA",
-      files: []
+      files: ["render1.png", "render4.png", "render3.png", "render2.png", "render5.png", "render6.png"]
     },
     "classic-stripes": {
       folder: "TheClassicStripes",
@@ -562,8 +567,16 @@
 
   function renderProjectGallery(project) {
     const galleryItems = getProjectGallery(project);
-    const galleryModifierClass = project.slug === "classic-stripes" ? " project-gallery-section--classic-stripes" : "";
-    const galleryItemModifierClass = project.slug === "classic-stripes" ? " project-gallery-item--square" : "";
+    const galleryModifierClass = project.slug === "classic-stripes"
+      ? " project-gallery-section--classic-stripes"
+      : project.slug === "istinara"
+      ? " project-gallery-section--istinara"
+      : "";
+    const galleryItemModifierClass = project.slug === "classic-stripes"
+      ? " project-gallery-item--square"
+      : project.slug === "istinara"
+      ? " project-gallery-item--istinara"
+      : "";
 
     if (!galleryItems.length) {
       return "";
@@ -592,6 +605,45 @@
       '    <button class="project-gallery-arrow is-next" type="button" aria-label="Next gallery image">&rsaquo;</button>' +
       "  </div>" +
       "</section>"
+    );
+  }
+
+  function renderIstinaraAxoSection() {
+    return (
+      '<section class="project-content-section istinara-axo-section" aria-label="Axonometric and plans">' +
+      '  <div class="project-section-head">' +
+      '    <p class="eyebrow">Axonometric</p>' +
+      '  </div>' +
+      '  <div class="istinara-axo-layout">' +
+      '    <figure class="istinara-axo-figure">' +
+      '      <img src="' + ISTINARA_AXO_LIGHT_SRC + '" data-light-src="' + ISTINARA_AXO_LIGHT_SRC + '" data-dark-src="' + ISTINARA_AXO_DARK_SRC + '" alt="ISTINARA axonometric overview" loading="lazy" />' +
+      '      <div class="istinara-axo-magnifier" aria-hidden="true"></div>' +
+      '    </figure>' +
+      '    <p class="project-section-copy istinara-axo-caption">The axonometric view illustrates the spatial organization across three levels. The ground floor is designed as an open retail environment with distinct jewellery zones, a seating area, and integrated digital experiences. The mezzanine functions as a private workspace for the founder, maintaining visual connection while preserving privacy. The basement supports operational needs, including meeting space, storage, and a secure vault.</p>' +
+      '  </div>' +
+      '  <div class="project-section-head">' +
+      '    <p class="eyebrow">Plans</p>' +
+      '  </div>' +
+      '  <div class="istinara-plans-grid">' +
+      '    <figure class="istinara-plan-item"><img src="' + ISTINARA_ASSET_BLOB_BASE_URL + '/plan1.png" alt="ISTINARA floor plan 1" loading="lazy" /></figure>' +
+      '    <figure class="istinara-plan-item"><img src="' + ISTINARA_ASSET_BLOB_BASE_URL + '/plan2.png" alt="ISTINARA floor plan 2" loading="lazy" /></figure>' +
+      '    <figure class="istinara-plan-item"><img src="' + ISTINARA_ASSET_BLOB_BASE_URL + '/plan3.png" alt="ISTINARA floor plan 3" loading="lazy" /></figure>' +
+      '  </div>' +
+      '</section>'
+    );
+  }
+
+  function renderIstinaraDrawingsSection() {
+    return (
+      '<section class="project-content-section istinara-drawings-section" aria-label="Sections">' +
+      '  <div class="project-section-head">' +
+      '    <p class="eyebrow">Sections</p>' +
+      '  </div>' +
+      '  <div class="istinara-drawings-grid">' +
+      '    <figure class="istinara-drawing-item"><img src="' + ISTINARA_ASSET_BLOB_BASE_URL + '/section1.png" alt="ISTINARA section 1" loading="lazy" /></figure>' +
+      '    <figure class="istinara-drawing-item"><img src="' + ISTINARA_ASSET_BLOB_BASE_URL + '/section2.png" alt="ISTINARA section 2" loading="lazy" /></figure>' +
+      '  </div>' +
+      '</section>'
     );
   }
 
@@ -679,9 +731,11 @@
 
     if (project.slug === "istinara") {
       return (
-        '<figure class="project-hero project-hero--istinara">' +
-        '  <!-- TODO: Replace ISTINARA hero placeholder with final logo / hero image asset. -->' +
-        '  <img src="' + project.heroImage + '" alt="' + projectTitle + ' — hero image" />' +
+        '<figure class="project-hero project-hero--istinara project-hero--istinara-logo" id="istinaraHero">' +
+        '  <div class="istinara-logo-frame">' +
+        '    <img class="istinara-logo-solid" src="' + ISTINARA_ASSET_BLOB_BASE_URL + '/solid-logo.png" alt="' + projectTitle + ' logo" />' +
+        '    <img class="istinara-logo-wire" src="' + ISTINARA_ASSET_BLOB_BASE_URL + '/wireframe-logo.png" alt="' + projectTitle + ' wireframe logo" aria-hidden="true" />' +
+        '  </div>' +
         '</figure>'
       );
     }
@@ -734,6 +788,288 @@
     });
   }
 
+  function setupIstinaraLogoHover() {
+    if (window.matchMedia("(hover: none)").matches) { return; }
+    var hero = document.getElementById("istinaraHero");
+    var frame = hero && hero.querySelector(".istinara-logo-frame");
+    var wire = hero && hero.querySelector(".istinara-logo-wire");
+    var solid = hero && hero.querySelector(".istinara-logo-solid");
+    if (!frame || !wire || !solid) { return; }
+
+    var BASE_CELL = 40;
+    var REVEAL_RADIUS = 142;
+    var REVEAL_INNER_RADIUS = 38;
+    var canvas = document.createElement("canvas");
+    var ctx = canvas.getContext("2d");
+    var rafId = 0;
+    var targetX = 0;
+    var targetY = 0;
+    var cursorX = 0;
+    var cursorY = 0;
+    var targetReveal = 0;
+    var reveal = 0;
+    var canvasWidth = 0;
+    var canvasHeight = 0;
+
+    if (!ctx) { return; }
+
+    canvas.className = "istinara-logo-canvas";
+    canvas.setAttribute("aria-hidden", "true");
+    frame.appendChild(canvas);
+
+    function clamp(value, min, max) {
+      return Math.max(min, Math.min(max, value));
+    }
+
+    function getBackgroundGrid() {
+      var backgroundCanvas = document.getElementById("bgCanvas");
+
+      if (backgroundCanvas && backgroundCanvas.width && backgroundCanvas.height) {
+        var rect = backgroundCanvas.getBoundingClientRect();
+
+        return {
+          originX: rect.left,
+          originY: rect.top,
+          cellWidth: rect.width / backgroundCanvas.width,
+          cellHeight: rect.height / backgroundCanvas.height
+        };
+      }
+
+      var columns = Math.max(1, Math.ceil(window.innerWidth / BASE_CELL));
+      var rows = Math.max(1, Math.ceil(window.innerHeight / BASE_CELL));
+
+      return {
+        originX: 0,
+        originY: 0,
+        cellWidth: window.innerWidth / columns,
+        cellHeight: window.innerHeight / rows
+      };
+    }
+
+    function getLoadedImage(image) {
+      if (!image.complete || !image.naturalWidth) {
+        return null;
+      }
+
+      return image;
+    }
+
+    function drawImageFitted(image) {
+      var imageHeight = canvasWidth * (image.naturalHeight / image.naturalWidth);
+      ctx.drawImage(image, 0, 0, canvasWidth, imageHeight);
+    }
+
+    function drawLogoState() {
+      var solidImage = getLoadedImage(solid);
+      var wireImage = getLoadedImage(wire);
+      if (!solidImage || !wireImage || !canvasWidth || !canvasHeight) {
+        return;
+      }
+
+      ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+      ctx.globalCompositeOperation = "source-over";
+      ctx.globalAlpha = 1;
+      drawImageFitted(solidImage);
+
+      if (reveal <= 0.01) {
+        return;
+      }
+
+      var frameRect = frame.getBoundingClientRect();
+      var grid = getBackgroundGrid();
+      var cellWidth = grid.cellWidth;
+      var cellHeight = grid.cellHeight;
+      var gridFrameX = frameRect.left - grid.originX;
+      var gridFrameY = frameRect.top - grid.originY;
+      var viewportX = gridFrameX + cursorX;
+      var viewportY = gridFrameY + cursorY;
+      var colMin = Math.floor((viewportX - REVEAL_RADIUS) / cellWidth);
+      var colMax = Math.ceil((viewportX + REVEAL_RADIUS) / cellWidth);
+      var rowMin = Math.floor((viewportY - REVEAL_RADIUS) / cellHeight);
+      var rowMax = Math.ceil((viewportY + REVEAL_RADIUS) / cellHeight);
+      var cells = [];
+
+      for (var col = colMin; col <= colMax; col++) {
+        for (var row = rowMin; row <= rowMax; row++) {
+          var cellX = col * cellWidth - gridFrameX;
+          var cellY = row * cellHeight - gridFrameY;
+          if (cellX + cellWidth <= 0 || cellX >= canvasWidth || cellY + cellHeight <= 0 || cellY >= canvasHeight) { continue; }
+
+          var dx = cellX + cellWidth * 0.5 - cursorX;
+          var dy = cellY + cellHeight * 0.5 - cursorY;
+          var distance = Math.sqrt(dx * dx + dy * dy);
+          if (distance > REVEAL_RADIUS) { continue; }
+
+          var opacity = clamp(
+            1 - (distance - REVEAL_INNER_RADIUS) / (REVEAL_RADIUS - REVEAL_INNER_RADIUS),
+            0,
+            1
+          );
+
+          cells.push({
+            x: cellX,
+            y: cellY,
+            width: cellWidth,
+            height: cellHeight,
+            alpha: Math.pow(opacity, 1.6) * reveal
+          });
+        }
+      }
+
+      ctx.globalCompositeOperation = "destination-out";
+      cells.forEach(function clearSolid(cell) {
+        ctx.globalAlpha = cell.alpha;
+        ctx.fillRect(cell.x, cell.y, cell.width, cell.height);
+      });
+
+      ctx.globalCompositeOperation = "source-over";
+      cells.forEach(function drawWire(cell) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(cell.x, cell.y, cell.width, cell.height);
+        ctx.clip();
+        ctx.globalAlpha = cell.alpha;
+        drawImageFitted(wireImage);
+        ctx.restore();
+      });
+
+      ctx.globalAlpha = 1;
+    }
+
+    function resizeLogoCanvas() {
+      var rect = frame.getBoundingClientRect();
+      var dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvasWidth = Math.max(1, Math.round(rect.width));
+      canvasHeight = Math.max(1, Math.round(rect.height));
+      canvas.width = Math.round(canvasWidth * dpr);
+      canvas.height = Math.round(canvasHeight * dpr);
+      canvas.style.width = canvasWidth + "px";
+      canvas.style.height = canvasHeight + "px";
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      drawLogoState();
+      requestRevealFrame();
+    }
+
+    function animateReveal() {
+      cursorX += (targetX - cursorX) * 0.28;
+      cursorY += (targetY - cursorY) * 0.28;
+      reveal += (targetReveal - reveal) * 0.2;
+      drawLogoState();
+
+      if (
+        Math.abs(targetX - cursorX) > 0.2 ||
+        Math.abs(targetY - cursorY) > 0.2 ||
+        Math.abs(targetReveal - reveal) > 0.01
+      ) {
+        rafId = requestAnimationFrame(animateReveal);
+        return;
+      }
+
+      rafId = 0;
+    }
+
+    function requestRevealFrame() {
+      if (!rafId) {
+        rafId = requestAnimationFrame(animateReveal);
+      }
+    }
+
+    function syncPointer(event) {
+      var rect = canvas.getBoundingClientRect();
+      targetX = event.clientX - rect.left;
+      targetY = event.clientY - rect.top;
+    }
+
+    function readyCanvas() {
+      if (!getLoadedImage(solid) || !getLoadedImage(wire)) {
+        return;
+      }
+
+      frame.classList.add("is-canvas-ready");
+      resizeLogoCanvas();
+      requestRevealFrame();
+    }
+
+    [solid, wire].forEach(function bindImageReady(image) {
+      if (image.complete) {
+        return;
+      }
+
+      image.addEventListener("load", readyCanvas, { once: true });
+    });
+
+    if (solid.complete && wire.complete) {
+      readyCanvas();
+    }
+
+    hero.addEventListener("mousemove", function onLogoMouseMove(e) {
+      syncPointer(e);
+      targetReveal = 1;
+      requestRevealFrame();
+    });
+
+    hero.addEventListener("mouseleave", function onLogoMouseLeave() {
+      targetReveal = 0;
+      requestRevealFrame();
+    });
+
+    window.addEventListener("resize", resizeLogoCanvas, { passive: true });
+  }
+
+  function setupIstinaraAxoMagnifier() {
+    if (window.matchMedia("(hover: none)").matches) { return; }
+    var figure = document.querySelector(".istinara-axo-figure");
+    var magnifier = figure && figure.querySelector(".istinara-axo-magnifier");
+    var img = figure && figure.querySelector("img");
+    if (!figure || !magnifier || !img) { return; }
+
+    var ZOOM = 2.2;
+
+    function getImgSrc() {
+      return img.currentSrc || img.src;
+    }
+
+    figure.addEventListener("mouseenter", function onAxoEnter() {
+      magnifier.style.backgroundImage = "url(\"" + getImgSrc() + "\")";
+      magnifier.style.opacity = "1";
+    });
+
+    figure.addEventListener("mouseleave", function onAxoLeave() {
+      magnifier.style.opacity = "0";
+      magnifier.style.clipPath = "circle(0px at 50% 50%)";
+    });
+
+    figure.addEventListener("mousemove", function onAxoMove(e) {
+      var rect = figure.getBoundingClientRect();
+      var cx = e.clientX - rect.left;
+      var cy = e.clientY - rect.top;
+      var W = figure.offsetWidth;
+      var H = figure.offsetHeight;
+      magnifier.style.backgroundSize = (W * ZOOM) + "px " + (H * ZOOM) + "px";
+      magnifier.style.backgroundPosition = (cx * (1 - ZOOM)) + "px " + (cy * (1 - ZOOM)) + "px";
+      magnifier.style.clipPath = "circle(182px at " + cx + "px " + cy + "px)";
+    });
+  }
+
+  function setupIstinaraAxoTheme() {
+    var img = document.querySelector(".istinara-axo-figure img");
+    if (!img) { return; }
+
+    function syncAxoImage(theme) {
+      var nextSrc = theme === "dark" ? img.dataset.darkSrc : img.dataset.lightSrc;
+      if (nextSrc && img.getAttribute("src") !== nextSrc) {
+        img.setAttribute("src", nextSrc);
+      }
+    }
+
+    var currentTheme = global.OKSTheme && global.OKSTheme.get ? global.OKSTheme.get() : "light";
+    syncAxoImage(currentTheme);
+
+    if (global.OKSTheme && global.OKSTheme.onChange) {
+      global.OKSTheme.onChange(syncAxoImage);
+    }
+  }
+
   document.addEventListener("DOMContentLoaded", function onReady() {
     const store = global.OKS_PORTFOLIO_DATA;
     const app = global.OKSSite;
@@ -772,10 +1108,12 @@
         renderProjectDecisions(project) +
         renderProjectGallery(project) +
         (project.galleryNote ? renderProjectNote(project.galleryNote) : "") +
+        (project.slug === "istinara" ? renderIstinaraAxoSection() : "") +
+        (project.slug === "istinara" ? renderIstinaraDrawingsSection() : "") +
         renderProjectLesson(project) +
         "</div>" +
         '<footer class="project-foot">' +
-        '  <img class="project-logo-inline" src="' + project.logo + '" alt="' + projectTitle + ' logo" data-slug="' + project.slug + '" />' +
+        '  <img class="project-logo-inline" src="' + (project.slug === "istinara" ? ISTINARA_ASSET_BLOB_BASE_URL + "/istinara_logo.png" : project.logo) + '" alt="' + projectTitle + ' logo" data-slug="' + project.slug + '" />' +
         '  <div class="project-foot-nav">' +
         '    <a class="project-next" href="./project.html?slug=' + encodeURIComponent(nextProject.slug) + '">Next: ' + nextProjectTitle + "</a>" +
         "  </div>" +
@@ -811,6 +1149,12 @@
 
       if (project.slug === "classic-stripes") {
         setupClassicStripesDemoFrame(host.querySelector("[data-desktop-demo-frame]"));
+      }
+
+      if (project.slug === "istinara") {
+        setupIstinaraLogoHover();
+        setupIstinaraAxoTheme();
+        setupIstinaraAxoMagnifier();
       }
 
       const sections = document.getElementById("projectSections");

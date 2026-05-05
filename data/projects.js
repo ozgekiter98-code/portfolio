@@ -31,8 +31,6 @@
       ],
       lesson:
         "Carrying one concept across <em>brand identity, visual storytelling, and spatial design</em> as <em>creative lead</em>. The project became about making <em>transformation visible at every level</em>, from symbolism and material to jewellery display and the store environment.",
-      galleryNote:
-        "Add gallery images for ISTINARA here. Place image files in /assets/projects/ISTINARA/ and update the files array in the PROJECT_GALLERIES istinara entry inside src/js/project.js."
     },
     {
       slug: "classic-stripes",

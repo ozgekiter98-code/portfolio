@@ -1972,7 +1972,7 @@ html[data-theme="dark"] .desktop-mockup {
   content: '';
   position: absolute;
   inset: 0;
-  background: var(--surface-1);
+  background: var(--page-bg);
   opacity: 0.58;
   pointer-events: none;
   transition: opacity var(--transition-slow);
@@ -2005,6 +2005,12 @@ html[data-theme="dark"] .desktop-mockup {
   flex-basis: clamp(14rem, 21vw, 18rem);
   width: clamp(14rem, 21vw, 18rem);
   aspect-ratio: 1 / 1;
+}
+
+.project-gallery-item--istinara {
+  flex-basis: clamp(25rem, 46vw, 42rem);
+  width: clamp(25rem, 46vw, 42rem);
+  aspect-ratio: 1536 / 1024;
 }
 
 .project-gallery-item:hover img {
@@ -2459,6 +2465,11 @@ html[data-theme="dark"] .nav-hamburger:focus-visible {
     flex-basis: min(15.5rem, 68vw);
     width: min(15.5rem, 68vw);
   }
+
+  .project-gallery-item--istinara {
+    flex-basis: min(24rem, 82vw);
+    width: min(24rem, 82vw);
+  }
 }
 
 @media (max-width: 640px) {
@@ -2807,6 +2818,184 @@ html[data-theme="dark"] .nav-hamburger:focus-visible {
   }
 }
 
+/* ── ISTINARA: logo hero interaction ────────────────────── */
+
+.project-hero--istinara-logo {
+  position: relative;
+  cursor: crosshair;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.project-overview--istinara .project-hero--istinara-logo {
+  width: 100%;
+  max-width: 100%;
+  overflow: visible;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  align-items: flex-start;
+  padding-top: calc(20px + 1.4rem + 0.5rem);
+}
+
+.istinara-logo-frame {
+  position: relative;
+  display: grid;
+}
+
+.project-hero--istinara-logo img {
+  grid-area: 1 / 1;
+  width: min(45vw, 448px);
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+.istinara-logo-frame .istinara-logo-solid {
+  z-index: 1;
+}
+
+.istinara-logo-frame .istinara-logo-wire {
+  z-index: 2;
+  opacity: 0;
+}
+
+.istinara-logo-canvas {
+  grid-area: 1 / 1;
+  z-index: 3;
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.istinara-logo-frame.is-canvas-ready img {
+  opacity: 0;
+}
+
+/* ── ISTINARA: axonometric section ──────────────────────── */
+
+.istinara-axo-layout {
+  display: grid;
+  grid-template-columns: clamp(20rem, 45%, 31rem) 1fr;
+  gap: clamp(2rem, 4vw, 3.5rem);
+  align-items: center;
+  max-width: 72rem;
+  margin-inline: auto;
+}
+
+.istinara-axo-figure {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius);
+  border: 1px solid var(--line-soft);
+  background: var(--surface-1);
+  box-shadow: var(--shadow-soft);
+  cursor: crosshair;
+}
+
+.istinara-axo-figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+  pointer-events: none;
+}
+
+.istinara-axo-magnifier {
+  position: absolute;
+  inset: 0;
+  background-color: var(--surface-1);
+  background-repeat: no-repeat;
+  clip-path: circle(0px at 50% 50%);
+  opacity: 0;
+  transition: opacity 0.18s ease;
+  pointer-events: none;
+}
+
+.istinara-axo-caption {
+  max-width: 46ch;
+  text-align: left;
+  align-self: center;
+}
+
+/* ── ISTINARA: plans grid ───────────────────────────────── */
+
+.istinara-plans-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(0.75rem, 1.5vw, 1.25rem);
+}
+
+.istinara-plan-item {
+  margin: 0;
+  overflow: hidden;
+  border-radius: var(--radius);
+  background: var(--surface-1);
+  border: 1px solid var(--line-soft);
+  box-shadow: var(--shadow-soft);
+  padding: clamp(0.75rem, 1.4vw, 1.15rem);
+}
+
+.istinara-plan-item img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* ── ISTINARA: section drawings ─────────────────────────── */
+
+.istinara-drawings-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: clamp(0.75rem, 1.5vw, 1.25rem);
+}
+
+.istinara-drawing-item {
+  margin: 0;
+  overflow: hidden;
+  border-radius: var(--radius);
+  background: var(--surface-1);
+  border: 1px solid var(--line-soft);
+  box-shadow: var(--shadow-soft);
+  padding: clamp(0.75rem, 1.4vw, 1.15rem);
+}
+
+.istinara-drawing-item img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.project-gallery-section--istinara .project-gallery-item {
+  background: var(--surface-1);
+  border: 1px solid var(--line-soft);
+  box-shadow: var(--shadow-soft);
+}
+
+.project-gallery-section--istinara .project-gallery-item img {
+  object-fit: contain;
+}
+
+@media (max-width: 760px) {
+  .istinara-axo-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .istinara-axo-figure {
+    max-width: 20rem;
+    margin-inline: auto;
+  }
+
+  .istinara-plans-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .istinara-drawings-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* ── WrapChat: hero animation placeholder ───────────────── */
 
 .project-hero--animation {
@@ -2980,6 +3169,225 @@ html[data-theme="dark"] .nav-hamburger:focus-visible {
   .statement-card:nth-child(3) {
     animation: oks-mount 0.55s 0.24s cubic-bezier(0.16, 1, 0.3, 1) both;
   }
+}
+
+/* ── Contact form modal ─────────────────────────────────── */
+
+.contact-form-trigger {
+  display: flex;
+  width: 100%;
+  margin-top: var(--space-sm);
+}
+
+.contact-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  background: rgba(0, 0, 0, 0.38);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition-slow);
+}
+
+body[data-contact-open] .contact-modal-backdrop {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.contact-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 31;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--page-padding);
+  pointer-events: none;
+}
+
+.contact-modal-panel {
+  width: min(100%, 34rem);
+  background: var(--pill-btn-bg);
+  backdrop-filter: blur(24px) saturate(140%);
+  -webkit-backdrop-filter: blur(24px) saturate(140%);
+  border: 1px solid var(--pill-btn-border);
+  border-radius: 1.5rem;
+  box-shadow: var(--shadow-soft), 0 32px 80px rgba(0, 0, 0, 0.22);
+  padding: clamp(1.5rem, 3vw, 2.25rem);
+  display: grid;
+  gap: var(--space-xl);
+  opacity: 0;
+  transform: scale(0.96) translateY(10px);
+  transition: opacity var(--transition-slow), transform var(--transition-slow);
+}
+
+body[data-contact-open] .contact-modal {
+  pointer-events: auto;
+}
+
+body[data-contact-open] .contact-modal-panel {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+}
+
+.contact-modal[aria-hidden="true"] {
+  pointer-events: none;
+}
+
+.contact-modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+}
+
+.contact-modal-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 2.5vw, 2rem);
+  font-weight: 600;
+  line-height: 1;
+  color: var(--text-strong);
+}
+
+.contact-modal-close {
+  flex-shrink: 0;
+  width: 2.25rem;
+  height: 2.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  border: 1px solid var(--pill-btn-border);
+  background: transparent;
+  color: var(--text-soft);
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition);
+}
+
+.contact-modal-close:hover {
+  background: var(--line-soft);
+  color: var(--text-strong);
+}
+
+.contact-form {
+  display: grid;
+  gap: var(--space-lg);
+}
+
+.contact-form-field {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.contact-form-label {
+  font-family: var(--font-secondary);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-soft);
+}
+
+.contact-form-input {
+  width: 100%;
+  padding: 0.7rem 0;
+  background: transparent;
+  border: none;
+  border-bottom: var(--separator-width) solid var(--separator-line);
+  border-radius: 0;
+  font-family: var(--font-secondary);
+  font-size: clamp(1rem, 1.2vw, 1.1rem);
+  font-weight: 500;
+  color: var(--text-strong);
+  outline: none;
+  transition: border-color var(--transition);
+}
+
+.contact-form-input::placeholder {
+  color: var(--text-soft);
+  opacity: 0.7;
+}
+
+.contact-form-input:focus {
+  border-bottom-color: rgb(var(--accent-rgb));
+}
+
+.contact-form-textarea {
+  resize: none;
+  min-height: 7rem;
+  line-height: 1.55;
+}
+
+.contact-form-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  padding-top: var(--space-sm);
+}
+
+.contact-form-fallback {
+  font-family: var(--font-secondary);
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-soft);
+  text-decoration: none;
+  transition: color var(--transition);
+}
+
+.contact-form-fallback:hover {
+  color: rgb(var(--accent-rgb));
+}
+
+.contact-form-submit {
+  padding: 0.65rem 1.5rem;
+  border-radius: 999px;
+  border: none;
+  background: rgb(var(--accent-rgb));
+  color: #fff;
+  font-family: var(--font-secondary);
+  font-size: 0.88rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: opacity var(--transition), transform var(--transition);
+}
+
+.contact-form-submit:hover:not(:disabled) {
+  opacity: 0.86;
+  transform: translateY(-1px);
+}
+
+.contact-form-submit:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.contact-form-success {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-md);
+  padding: var(--space-2xl) 0;
+  text-align: center;
+  color: rgb(var(--accent-rgb));
+}
+
+.contact-form-success p {
+  margin: 0;
+  font-family: var(--font-secondary);
+  font-size: clamp(1rem, 1.3vw, 1.15rem);
+  font-weight: 600;
+  color: var(--text-strong);
+}
+
+.contact-form-success.is-visible {
+  display: flex;
 }
 
 @media (prefers-reduced-motion: reduce) {

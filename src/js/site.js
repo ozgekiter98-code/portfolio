@@ -686,7 +686,9 @@
         applyAccent(requestedAccent);
       });
     }
-    createAccentLab();
+    if (document.body.dataset.page !== "project") {
+      createAccentLab();
+    }
     window.addEventListener("resize", syncGridMetrics, { passive: true });
   }
 
