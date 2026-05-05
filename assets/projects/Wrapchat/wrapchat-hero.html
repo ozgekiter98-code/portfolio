@@ -7,6 +7,11 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+    html {
+      color-scheme: normal;
+      background: transparent;
+    }
+
     html, body {
       width: 100%;
       height: 100%;
@@ -344,7 +349,7 @@
     /* phone-outer: 360px wide, 726px tall (13px padding × 2 + 700px screen) */
     /* add headroom for drop-shadow spread */
     const phoneW = 400;
-    const phoneH = 900;
+    const phoneH = 750;
     const scale = Math.min(availW / phoneW, availH / phoneH, 1);
     phoneWrap.style.transform = scale < 1 ? 'scale(' + scale.toFixed(3) + ')' : '';
   }
