@@ -43,11 +43,11 @@
         title: "Who's more obsessed?",
       type: "bars",
       bars: [
-        { label: "Maya", value: 28441, color: "#e16235" },
+        { label: "Alex", value: 28441, color: "#e16235" },
         { label: "Elliot", value: 21993, color: "#4f8fd8" }
       ],
-      subtitle: "56% of all messages came from Maya.",
-      quote: "Maya is absolutely carrying this friendship on texting stamina alone.",
+      subtitle: "56% of all messages came from Alex.",
+      quote: "Alex is absolutely carrying this friendship on texting stamina alone.",
       nextLabel: "Next →",
       hideBack: true
     },
@@ -57,7 +57,7 @@
       title: "The Ghost Award",
       type: "winnerInsight",
       winner: "Elliot",
-      subtitle: "Maya avg reply: 18m    Elliot avg reply: 2h 11m",
+      subtitle: "Alex avg reply: 18m    Elliot avg reply: 2h 11m",
       insightLabel: "WHAT'S REALLY GOING ON",
       insightBody: "Elliot disappears mid-conversation like a character leaving the plot for dramatic tension, then returns six hours later with memes and absolutely no explanation.",
       quote: "Elliot treats replying like a side quest."
@@ -67,9 +67,9 @@
       theme: "roast",
       title: "The Last Word",
       type: "winner",
-      winner: "Maya Chen",
+      winner: "Alex Rivera",
       subtitle: "Sends the final unanswered message 1,143 times.",
-      quote: "Last seen: Maya adding 'anyway' after already ending the conversation twice."
+      quote: "Last seen: Alex adding 'anyway' after already ending the conversation twice."
     },
     {
       section: "THE LOVELY",
@@ -87,7 +87,7 @@
       type: "winnerInsight",
       winner: "Elliot",
       insightLabel: "THE SWEETEST MOMENT",
-      insightBody: "When Maya casually mentioned she hadn't eaten all day, Elliot ordered food to her apartment without telling her and pretended it \"was probably a delivery mistake.\""
+      insightBody: "When Alex casually mentioned he hadn't eaten all day, Elliot ordered food to his apartment without telling him and pretended it \"was probably a delivery mistake.\""
     },
     {
       section: "THE LOVELY",
@@ -106,7 +106,7 @@
       theme: "lovely",
       title: "Who always reaches out first?",
       type: "winner",
-      winner: "Maya Chen",
+      winner: "Alex Rivera",
       subtitle: "Started 68% of all conversations.",
       quote: "Someone's pretending not to care less than the other one."
     },
@@ -115,9 +115,9 @@
       theme: "funny",
       title: "The Funny One",
       type: "winnerInsight",
-      winner: "Maya",
+      winner: "Alex",
       insightLabel: "DROPS LINES LIKE",
-      insightBody: "After accidentally walking into the wrong yoga class and staying for twenty minutes out of politeness, Maya described the experience like a war documentary while Elliot nearly passed out laughing."
+      insightBody: "After accidentally walking into the wrong yoga class and staying for twenty minutes out of politeness, Alex described the experience like a war documentary while Elliot nearly passed out laughing."
     },
     {
       section: "THE FUNNY",
@@ -125,7 +125,7 @@
       title: "Spirit emojis",
       type: "emojis",
       emojis: [
-        { emoji: "🫠", name: "Maya Chen" },
+        { emoji: "🫠", name: "Alex Rivera" },
         { emoji: "☕️", name: "Elliot" }
       ],
       subtitle: "These two emojis basically ARE this friendship."
@@ -154,7 +154,7 @@
       title: "Signature phrases",
       type: "phrases",
       phrases: [
-        { phrase: "i'm actually done this time", note: "never actually done", name: "Maya Chen" },
+        { phrase: "i'm actually done this time", note: "never actually done", name: "Alex Rivera" },
         { phrase: "wait wait wait", note: "usually before chaos", name: "Elliot" }
       ],
       subtitle: "The phrases that basically summarize your entire dynamic."
@@ -165,7 +165,7 @@
       title: "Message length",
       type: "stats",
       stats: [
-        { value: "22", label: "avg chars", detail: "max 481", name: "Maya Chen" },
+        { value: "22", label: "avg chars", detail: "max 481", name: "Alex Rivera" },
         { value: "37", label: "avg chars", detail: "max 912", name: "Elliot" }
       ],
       quote: "One sends paragraphs. The other sends emotional jumpscares like 'bro.'"
@@ -176,9 +176,9 @@
       title: "Media and links",
       type: "barGroups",
       groups: [
-        { label: "PHOTOS & VIDEOS", bars: [{ label: "Maya", value: 1248, color: "#39b99b" }, { label: "Elliot", value: 803, color: "#4f8fd8" }] },
-        { label: "VOICE MEMOS", bars: [{ label: "Maya", value: 18, color: "#39b99b" }, { label: "Elliot", value: 42, color: "#4f8fd8" }] },
-        { label: "LINKS SHARED", bars: [{ label: "Maya", value: 219, color: "#39b99b" }, { label: "Elliot", value: 177, color: "#4f8fd8" }] }
+        { label: "PHOTOS & VIDEOS", bars: [{ label: "Alex", value: 1248, color: "#39b99b" }, { label: "Elliot", value: 803, color: "#4f8fd8" }] },
+        { label: "VOICE MEMOS", bars: [{ label: "Alex", value: 18, color: "#39b99b" }, { label: "Elliot", value: 42, color: "#4f8fd8" }] },
+        { label: "LINKS SHARED", bars: [{ label: "Alex", value: 219, color: "#39b99b" }, { label: "Elliot", value: 177, color: "#4f8fd8" }] }
       ]
     },
     {
@@ -193,7 +193,7 @@
         },
         {
           label: "MOST TENSE MOMENT",
-          body: "Elliot disappearing for six hours after saying \"we need to talk later,\" while Maya immediately assumed somebody died."
+          body: "Elliot disappearing for six hours after saying \"we need to talk later,\" while Alex immediately assumed somebody died."
         }
       ]
     },
@@ -202,9 +202,9 @@
       theme: "insight",
       title: "The Drama Report",
       type: "winnerInsight",
-      winner: "Maya",
+      winner: "Alex",
       insightLabel: "HOW THEY DO IT",
-      insightBody: "Maya treats every small inconvenience like season finale material — missed trains, weird coworkers, unread texts, suspiciously passive-aggressive Spotify lyrics. Elliot mostly adds fuel instead of solutions."
+      insightBody: "Alex treats every small inconvenience like season finale material — missed trains, weird coworkers, unread texts, suspiciously passive-aggressive Spotify lyrics. Elliot mostly adds fuel instead of solutions."
     },
     {
       section: "INSIGHT",
@@ -233,9 +233,9 @@
       title: "Your chat, unwrapped.",
       type: "summary",
       cells: [
-        { label: "MOST TEXTS", value: "Maya Chen" },
+        { label: "MOST TEXTS", value: "Alex Rivera" },
         { label: "GHOST AWARD", value: "Elliot" },
-        { label: "FUNNIEST", value: "Maya" },
+        { label: "FUNNIEST", value: "Alex" },
         { label: "TOP WORD", value: "\"literally\"" },
         { label: "SPIRIT EMOJIS", value: "🫠 ☕️" },
         { label: "BEST STREAK", value: "27 days" }
@@ -657,7 +657,7 @@
       'if(c.quote&&c.type!=="quoteCard"){h+=`<div class="oks-wc-quote">“${esc(c.quote)}”</div>`}' +
       'return h}' +
       'function cards(){return activeReport==="general"?CARDS:REPORTS[activeReport]||CARDS}' +
-      'function reportFromText(text){if(/Chat Health Score|Power balance|Red flag 1|Toxicity Report|Jordan/.test(text))return "toxicity";if(/Love language compatibility|Sam\\x27s love language|Love Language Report|Sam Chen|Sam/.test(text))return "lovelang";if(/Relationship trajectory|Growth Report|Then vs Now|Jamie/.test(text))return "growth";if(/Accountability Report|Promises made|Most notable broken promise|Maya & Lena/.test(text))return "accounta";if(/Energy Report|Net energy scores|Energy compatibility|Both net positive/.test(text))return "energy";if(/Who\\x27s more obsessed\\?|The Ghost Award|Your chat, unwrapped\\.|Alex, you might want to check your screen time|General Wrapped/.test(text))return "general";return ""}' +
+      'function reportFromText(text){if(/Try demo chat|Who\\x27s more obsessed\\?|The Ghost Award|Your chat, unwrapped\\.|Alex, you might want to check your screen time|General Wrapped/.test(text))return "general";if(/Chat Health Score|Power balance|Red flag 1|Toxicity Report|Jordan/.test(text))return "toxicity";if(/Love language compatibility|Sam\\x27s love language|Love Language Report|Sam Chen|Sam/.test(text))return "lovelang";if(/Relationship trajectory|Growth Report|Then vs Now|Jamie/.test(text))return "growth";if(/Accountability Report|Promises made|Most notable broken promise|Maya & Lena/.test(text))return "accounta";if(/Energy Report|Net energy scores|Energy compatibility|Both net positive/.test(text))return "energy";return ""}' +
       'function detectReport(text){return pendingReport||reportFromText(text)}' +
       'document.addEventListener("click",e=>{const button=e.target&&e.target.closest&&e.target.closest("button");if(!button)return;const report=reportFromText(button.innerText||button.textContent||"");if(report){pendingReport=report}},true);' +
       'function render(){const list=cards();const c=list[step]||list[0];const theme=THEMES[c.theme]||THEMES.wrapchat;const overlay=ensureOverlay();const isLast=step===list.length-1;const showBack=!c.hideBack||step>0||activeReport!=="general";overlay.innerHTML=`<main class="oks-wc-shell oks-wc-shell--${esc(c.type)}" style="--bg:${theme[0]};--inner:${theme[1]};--pale:${theme[2]};--accent:${theme[2]};--progress:${((step+1)/list.length)*100}%"><div class="oks-wc-progress"><span></span></div><div class="oks-wc-pill">${esc(c.section)}</div><section class="oks-wc-pane">${content(c)}<div class="oks-wc-actions">${isLast?`<button class="oks-wc-btn is-secondary" data-back>← Back</button><button class="oks-wc-btn" data-next>${esc(c.nextLabel||"My Results")}</button>`:`${showBack?`<button class="oks-wc-btn is-secondary" data-back>← Back</button>`:""}<button class="oks-wc-btn" data-next>${esc(c.nextLabel||"Next →")}</button>`}</div></section></main>`;const back=overlay.querySelector("[data-back]");const next=overlay.querySelector("[data-next]");if(back)back.onclick=()=>{if(step===0){closeToMyResults()}else{step=Math.max(0,step-1);render()}};if(next)next.onclick=()=>{if(step>=list.length-1){closeToMyResults()}else{step+=1;render()}};}' +
@@ -1076,6 +1076,12 @@
           return;
         }
 
+        if (!video.dataset.galleryLoaded) {
+          video.preload = "auto";
+          video.load();
+          video.dataset.galleryLoaded = "true";
+        }
+
         if (index === activeIndex) {
           const playPromise = video.play();
 
@@ -1306,7 +1312,7 @@
         .map(function renderGalleryItem(item) {
           const defaultActiveAttribute = item.defaultActive ? ' data-default-active="true"' : "";
           const mediaMarkup = item.type === "video"
-            ? '  <video src="' + item.src + '" aria-label="' + item.alt + '" muted loop playsinline preload="metadata"></video>'
+            ? '  <video src="' + item.src + '" aria-label="' + item.alt + '" muted loop playsinline preload="auto"></video>'
             : '  <img src="' + item.src + '" alt="' + item.alt + '" loading="lazy" />';
 
           return (

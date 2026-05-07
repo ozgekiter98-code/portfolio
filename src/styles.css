@@ -3096,6 +3096,11 @@ html[data-theme="dark"] .nav-hamburger:focus-visible {
   transition: opacity var(--transition), transform var(--transition);
 }
 
+html[data-theme="dark"] .demo-cta-pill {
+  color: #101018;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.26);
+}
+
 .demo-cta-pill:hover {
   opacity: 0.86;
   transform: translateY(-1px);
